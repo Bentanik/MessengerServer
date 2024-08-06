@@ -6,4 +6,5 @@ namespace MessengerServer.Src.Application.Interfaces;
 public interface IAuthenticationServices
 {
     Task<Result<object>> Register(RegisterDTO registerDto);
+    Task<Result<object>> ActiveAccount(string email);
 }
