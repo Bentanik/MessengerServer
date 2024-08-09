@@ -72,4 +72,12 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
             }
         });
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest req)
+    {
+        var registerDto = req.ToLoginDTO();
+        var result = await _authenticationService.Register(registerDto);
+        return Ok(result);
+    }
 }

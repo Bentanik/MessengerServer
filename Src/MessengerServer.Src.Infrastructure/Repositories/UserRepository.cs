@@ -28,4 +28,9 @@ public class UserRepository(AppDbContext context) : RepositoryBase<User>(context
     {
         return await _appDbContext.Users.AnyAsync(u => u.FullName == fullName);
     }
+
+    public async Task<User> GetUserByEmail(string email)
+    {
+        return await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+    }
 }

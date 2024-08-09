@@ -7,4 +7,5 @@ public interface IAuthenticationServices
 {
     Task<Result<object>> Register(RegisterDTO registerDto);
     Task<Result<object>> ActiveAccount(string email);
+    Task<Result<object>> Login(LoginDTO loginDto);
 }

@@ -16,6 +16,15 @@ public static class AuthenticationMapExtension
         };
     }
 
+    public static LoginDTO ToLoginDTO(this LoginRequest loginRequest)
+    {
+        return new LoginDTO
+        {
+            Email = loginRequest.Email,
+            Password = loginRequest.Password,
+        };
+    }
+
     public static User ToUser(this RegisterDTO registerDTO)
     {
         var user = new User

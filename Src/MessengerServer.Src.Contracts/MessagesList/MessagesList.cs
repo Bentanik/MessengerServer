@@ -37,4 +37,7 @@ public enum MessagesList
 
     [Message("Registration failed, please register again", "rg04")]
     RegisterFail,
+
+    [Message("User does not exist in the system", "us01")]
+    UserNotExist
 }

@@ -8,7 +8,6 @@ using System.Text.Json;
 using MessengerServer.Src.Application.MapExtensions.AuthenticationMapExtensions;
 using MessengerServer.Src.Contracts.DTOs.UserDTOs;
 using MessengerServer.Src.Contracts.Abstractions.AuthenticationRequests;
-using MessengerServer.Src.Domain.Entities;
 
 namespace MessengerServer.Src.Application.Services;
 
@@ -167,6 +166,35 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
             Error = result > 0 ? 0 : 1,
             Message = result > 0 ? MessagesList.RegisterSuccess.GetErrorMessage().Message : MessagesList.RegisterFail.GetErrorMessage().Message,
             Data = loginResponse
+        };
+    }
+
+    public async Task<Result<object>> Login(LoginDTO loginDto)
+    {
+        var emailExsits = await _unitOfWork.UserRepository.GetUserByEmail(loginDto.Email);
+
+        if(emailExsits == null)
+        {
+            return new Result<object>
+            {
+                Error = 1,
+                Message = MessagesList.UserNotExist.GetErrorMessage().Message,
+            };
+        }
+
+        UserGenerateTokenDTO userTokenGenerate = new()
+        {
+            Email = loginDto.Email,
+            RoleName = "User",
+        };
+
+
+        var result = 0;
+        return new Result<object>
+        {
+            Error = result > 0 ? 0 : 1,
+            Message = result > 0 ? MessagesList.RegisterSuccess.GetErrorMessage().Message : MessagesList.RegisterFail.GetErrorMessage().Message,
+            //Data = loginResponse
         };
     }
 }

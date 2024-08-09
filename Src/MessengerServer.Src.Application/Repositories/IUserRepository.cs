@@ -8,4 +8,5 @@ public interface IUserRepository : IRepositoryBase<User>
     Task<bool> IsUserExistsByEmail(string email);
     Task<bool> IsUserExistsByFullName(string fullName);
     Task<ViewEmailFullNameDTO> GetInfoEmailFullNameByEmail(string email);
+    Task<User> GetUserByEmail(string email);
 }
