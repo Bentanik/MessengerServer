@@ -14,6 +14,9 @@ public enum MessagesList
     [Message("Password must be at least 6 characters long.", "psd02")]
     PasswordMinimumLengthSix,
 
+    [Message("Password does not match.", "psd03")]
+    PasswordNotMatch,
+
     [Message("Email is required.", "em01")]
     MissingEmail,
 
@@ -26,18 +29,22 @@ public enum MessagesList
     [Message("Please check account email and send again!", "sem01")]
     EmailSendingFailed,
 
-    [Message("Account of you only exists in 12 hours, please check email to sign up", "rg01")]
+    [Message("Account of you only exists in 12 hours, please check email to sign up.", "rg01")]
     Register,
 
-    [Message("Activation failed, please re-register to activate", "rg02")]
+    [Message("Activation failed, please re-register to activate!", "rg02")]
     ActiveRegisterFail,
 
-    [Message("Sign Up Success", "rg03")]
+    [Message("Sign Up Success.", "rg03")]
     RegisterSuccess,
 
-    [Message("Registration failed, please register again", "rg04")]
+    [Message("Registration failed, please register again!", "rg04")]
     RegisterFail,
 
-    [Message("User does not exist in the system", "us01")]
-    UserNotExist
+    [Message("User does not exist in the system!", "us01")]
+    UserNotExist,
+
+    [Message("Please login again!", "lg01")]
+    LoginAgain
+
 }

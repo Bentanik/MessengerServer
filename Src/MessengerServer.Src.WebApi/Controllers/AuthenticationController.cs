@@ -2,6 +2,8 @@ using MessengerServer.Src.Application.Interfaces;
 using MessengerServer.Src.Application.MapExtensions.AuthenticationMapExtensions;
 using MessengerServer.Src.Contracts.Abstractions;
 using MessengerServer.Src.Contracts.Abstractions.AuthenticationRequests;
+using MessengerServer.Src.Contracts.ErrorResponses;
+using MessengerServer.Src.Contracts.MessagesList;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessengerServer.Src.WebApi.Controllers;
@@ -24,39 +26,45 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
     public async Task<IActionResult> ActiveAccount([FromQuery] string email)
     {
         var result = await _authenticationService.ActiveAccount(email);
+        return Ok(result);
+    }
 
-        if(result?.Error == 1)
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest req)
+    {
+        var loginDTO = req.ToLoginDTO();
+        var serviceLogin = await _authenticationService.Login(loginDTO);
+
+        if(serviceLogin?.Error == 1)
         {
-            return Ok(result);
+            return Ok(serviceLogin);
         }
 
-        LoginResponse? response = null;
+        LoginResponse? response = serviceLogin?.Data as LoginResponse;
 
-        if(result?.Data != null)
-        {
-            response = result?.Data as LoginResponse;
-        }
-        
         if (response == null)
         {
             return Ok(new Result<object>
             {
                 Error = 1,
-                Message = "Please login again!",
-                Data = null
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.LoginAgain.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.LoginAgain.GetErrorMessage().Message
+                       }
+                    }
             });
         }
 
-        if(response.RefreshToken != null)
+        Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
         {
-            Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                Path = "/",
-                SameSite = SameSiteMode.Strict,
-            });
-        }
+            HttpOnly = true,
+            Secure = true,
+            Path = "/",
+            SameSite = SameSiteMode.Strict,
+        });
 
         return Ok(new Result<object>
         {
@@ -64,20 +72,9 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
             Message = "Login successfully",
             Data = new
             {
-                AccessToken = new
-                {
-                    Token_type = "Bearer",
-                    Token = response.AccessToken,
-                },
+                Token_type = "Bearer",
+                AccessToken = response.AccessToken
             }
         });
-    }
-
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest req)
-    {
-        var registerDto = req.ToLoginDTO();
-        var result = await _authenticationService.Register(registerDto);
-        return Ok(result);
     }
 }

@@ -26,6 +26,18 @@ public static class DependencyInjection
                  };
              });
 
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowSpecificOrigin",
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+        });
+
         services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
         services.AddFluentValidationAutoValidation();
         services.AddFluentValidationClientsideAdapters();
@@ -40,6 +52,8 @@ public static class DependencyInjection
         services.Configure<EmailSetting>(configuration.GetSection(EmailSetting.SectionName));
         services.Configure<RedisSetting>(configuration.GetSection(RedisSetting.SectionName));
         services.Configure<JwtSetting>(configuration.GetSection(JwtSetting.SectionName));
+        services.Configure<ClientSetting>(configuration.GetSection(ClientSetting.SectionName));
+
 
 
         return services;
