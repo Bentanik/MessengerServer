@@ -7,19 +7,20 @@ using MessengerServer.Src.Contracts.ErrorResponses;
 using System.Text.Json;
 using MessengerServer.Src.Application.MapExtensions.AuthenticationMapExtensions;
 using MessengerServer.Src.Contracts.DTOs.UserDTOs;
-using MessengerServer.Src.Contracts.Abstractions.AuthenticationRequests;
 using MessengerServer.Src.Contracts.Settings;
 using Microsoft.Extensions.Options;
+using MessengerServer.Src.Contracts.Abstractions.AuthenticationResponses;
 
 namespace MessengerServer.Src.Application.Services;
 
-public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unitOfWork, IEmailServices emailServices, IRedisService redisService, ITokenGeneratorService tokenGeneratorService, IOptions<ClientSetting> clientSetting) : IAuthenticationServices
+public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unitOfWork, IEmailServices emailServices, IRedisService redisService, ITokenGeneratorService tokenGeneratorService, IOptions<ClientSetting> clientSetting, IOptions<JwtSetting> jwtSetting) : IAuthenticationServices
 {
     private readonly IPasswordHash _passwordHash = passwordHash;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IEmailServices _emailServices = emailServices;
     private readonly IRedisService _redisService = redisService;
     private readonly ClientSetting _clientSetting = clientSetting.Value;
+    private readonly JwtSetting _jwtSetting = jwtSetting.Value;
     private readonly ITokenGeneratorService _tokenGeneratorService = tokenGeneratorService;
 
     public async Task<Result<object>> Register(RegisterDTO registerDto)
@@ -164,7 +165,7 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
     public async Task<Result<object>> Login(LoginDTO loginDto)
     {
         var emailExsits = await _unitOfWork.UserRepository.GetUserByEmail(loginDto.Email);
-        //Check email exist
+        //Check email not exist
         if (emailExsits == null)
         {
             return new Result<object>
@@ -210,16 +211,41 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
         //Generate refresh token
         var refreshToken = _tokenGeneratorService.GenerateRefreshToken(userTokenGenerate);
 
-        var loginResponse = new LoginResponse()
+        await _redisService.SetStringAsync($"RefreshToken:{loginDto.Email}", refreshToken, TimeSpan.FromMinutes(_jwtSetting.RefreshTokenExpMinute));
+
+        var loginTokenDTO = new LoginTokenDTO()
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
         };
-        if (emailExsits?.Id != null) loginResponse.UserId = emailExsits.Id;
+
+        var viewHeaderUserDTO = new ViewHeaderUserDTO()
+        {
+            UserId = emailExsits.Id,
+            FullName = emailExsits.FullName,
+            Email = emailExsits.Email,
+        };
+
+        var loginResponse = new LoginResponse()
+        {
+            ViewHeaderUserDTO = viewHeaderUserDTO,
+            LoginTokenDTO = loginTokenDTO
+        };
+
         return new Result<object>
         {
             Error = 0,
             Data = loginResponse
+        };
+    }
+
+    public async Task<Result<object>> Logout(string email)
+    {
+        await _redisService.DeleteKeyAsync($"RefreshToken:{email}");
+        return new Result<object>
+        {
+            Error = 0,
+            Message = "Logout successfully",
         };
     }
 }

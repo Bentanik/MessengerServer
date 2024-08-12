@@ -34,6 +34,31 @@ public class RedisService : IRedisService, IDisposable
         return await _db.KeyDeleteAsync(key);
     }
 
+    public async Task HashSetFieldAsync(string id, string field, string value)
+    {
+        await _db.HashSetAsync(id, field, value);
+    }
+
+    public async Task<string> HashGetFieldAsync(string id, string field)
+    {
+        return (await _db.HashGetAsync(id, field)).ToString();
+    }
+
+    public async Task<RedisValue[]> HashGetAllValuesAsync(string id)
+    {
+        return await _db.HashValuesAsync(id);
+    }
+
+    public async Task<RedisValue[]> HashGetAllFieldsAsync(string id)
+    {
+        return await _db.HashKeysAsync(id);
+    }
+
+    public async Task<bool> HashDeleteFieldAsync(string id, string field)
+    {
+        return await _db.HashDeleteAsync(id, field);
+    }
+
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

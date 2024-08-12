@@ -24,6 +24,11 @@ public static class DependencyInjection
                          .Select(e => JsonSerializer.Deserialize<ErrorResponse>(e.ErrorMessage));
                      return new BadRequestObjectResult(new Result<object> { Error = 1, Message = "Missing value!", Data = errors });
                  };
+             })
+             .AddJsonOptions(options =>
+             {
+                 options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                 options.JsonSerializerOptions.WriteIndented = true;
              });
 
         services.AddCors(options =>

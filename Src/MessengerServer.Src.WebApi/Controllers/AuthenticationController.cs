@@ -1,10 +1,14 @@
+using Azure;
 using MessengerServer.Src.Application.Interfaces;
 using MessengerServer.Src.Application.MapExtensions.AuthenticationMapExtensions;
 using MessengerServer.Src.Contracts.Abstractions;
 using MessengerServer.Src.Contracts.Abstractions.AuthenticationRequests;
+using MessengerServer.Src.Contracts.Abstractions.AuthenticationResponses;
 using MessengerServer.Src.Contracts.ErrorResponses;
 using MessengerServer.Src.Contracts.MessagesList;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace MessengerServer.Src.WebApi.Controllers;
 
@@ -35,7 +39,7 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
         var loginDTO = req.ToLoginDTO();
         var serviceLogin = await _authenticationService.Login(loginDTO);
 
-        if(serviceLogin?.Error == 1)
+        if (serviceLogin?.Error == 1)
         {
             return Ok(serviceLogin);
         }
@@ -58,7 +62,7 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
             });
         }
 
-        Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
+        Response.Cookies.Append("refreshToken", response.LoginTokenDTO.RefreshToken, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -72,9 +76,23 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
             Message = "Login successfully",
             Data = new
             {
-                Token_type = "Bearer",
-                AccessToken = response.AccessToken
+                Token = new
+                {
+                    TokenType = "Bearer",
+                    response.LoginTokenDTO.AccessToken,
+                },
+                User = response.ViewHeaderUserDTO,
             }
         });
+    }
+
+    [Authorize]
+    [HttpDelete("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var result = await _authenticationService.Logout(email);
+        Response.Cookies.Delete("refreshToken");
+        return Ok(result);
     }
 }

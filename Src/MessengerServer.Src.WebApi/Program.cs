@@ -3,7 +3,10 @@ using MessengerServer.Src.WebApi;
 var builder = WebApplication.CreateBuilder(args);
 
 {
-    builder.Services.AddWebApi(builder.Configuration);
+    builder.Services
+        .AddWebApi(builder.Configuration)
+        .AddAuthenticationAndAuthorization(builder.Configuration);            
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 }
