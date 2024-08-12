@@ -95,4 +95,68 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
         Response.Cookies.Delete("refreshToken");
         return Ok(result);
     }
+
+    [HttpPut("refresh_token")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        var refreshToken = Request.Cookies["refreshToken"];
+        if (refreshToken == null)
+            return Unauthorized(new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.LoginTimeout.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.LoginTimeout.GetErrorMessage().Message
+                       }
+                    }
+            });
+
+        var serviceRefreshToken = await _authenticationService.RefreshToken(refreshToken);
+        if (serviceRefreshToken.Error == 1)
+            return Unauthorized(serviceRefreshToken);
+
+        LoginResponse? response = serviceRefreshToken?.Data as LoginResponse;
+
+        if (response == null)
+        {
+            return Ok(new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.LoginAgain.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.LoginAgain.GetErrorMessage().Message
+                       }
+                    }
+            });
+        }
+
+        Response.Cookies.Append("refreshToken", response.LoginTokenDTO.RefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            Path = "/",
+            SameSite = SameSiteMode.Strict,
+        });
+
+        return Ok(new Result<object>
+        {
+            Error = 0,
+            Message = "Refresh token successfully",
+            Data = new
+            {
+                Token = new
+                {
+                    TokenType = "Bearer",
+                    response.LoginTokenDTO.AccessToken,
+                },
+                User = response.ViewHeaderUserDTO,
+            }
+        });
+    }
 }

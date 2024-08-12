@@ -9,4 +9,5 @@ public interface IAuthenticationServices
     Task<Result<object>> ActiveAccount(string email);
     Task<Result<object>> Login(LoginDTO loginDto);
     Task<Result<object>> Logout(string email);
+    Task<Result<object>> RefreshToken(string token);
 }

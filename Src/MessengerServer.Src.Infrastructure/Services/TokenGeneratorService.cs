@@ -44,4 +44,31 @@ public class TokenGeneratorService(IOptions<JwtSetting> jwtSetting) : ITokenGene
             return GenerateToken(_jwtSetting.RefreshSecretToken, _jwtSetting.Issuer, _jwtSetting.Audience, _jwtSetting.RefreshTokenExpMinute, claims);
         return null;
     }
+
+    public string ValidateAndGetEmailFromToken(string refreshToken)
+    {
+        TokenValidationParameters validationParameters = new()
+        {
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.RefreshSecretToken)),
+            ValidIssuer = _jwtSetting.Issuer,
+            ValidAudience = _jwtSetting.Audience,
+            ValidateIssuerSigningKey = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ClockSkew = TimeSpan.Zero,
+        };
+
+        JwtSecurityTokenHandler tokenHandler = new();
+        try
+        {
+            var principal = tokenHandler.ValidateToken(refreshToken, validationParameters, out SecurityToken validatedToken);
+            var emailClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+            return emailClaim?.Value;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
 }

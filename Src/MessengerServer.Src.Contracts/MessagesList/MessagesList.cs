@@ -45,6 +45,8 @@ public enum MessagesList
     UserNotExist,
 
     [Message("Please login again!", "lg01")]
-    LoginAgain
+    LoginAgain,
 
+    [Message("Login timeout expired, please login again", "lg02")]
+    LoginTimeout
 }

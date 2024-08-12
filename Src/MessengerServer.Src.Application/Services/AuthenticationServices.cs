@@ -181,10 +181,10 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                     }
             };
         }
-        
+
         //Verify password
         var verifyPassword = _passwordHash.VeriyPassword(loginDto.Password, emailExsits.Password);
-        if(verifyPassword == false)
+        if (verifyPassword == false)
         {
             return new Result<object>
             {
@@ -246,6 +246,55 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
         {
             Error = 0,
             Message = "Logout successfully",
+        };
+    }
+
+    public async Task<Result<object>> RefreshToken(string token)
+    {
+        var email = _tokenGeneratorService.ValidateAndGetEmailFromToken(token);
+        if (email == null)
+        {
+            return new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.LoginTimeout.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.LoginTimeout.GetErrorMessage().Message
+                       }
+                    }
+            };
+        }
+
+        UserGenerateTokenDTO userTokenGenerate = new()
+        {
+            Email = email,
+            RoleName = "User",
+        };
+
+        var accessToken = _tokenGeneratorService.GenerateAccessToken(userTokenGenerate);
+        var refreshToken = _tokenGeneratorService.GenerateRefreshToken(userTokenGenerate);
+        await _redisService.SetStringAsync($"RefreshToken:{email}", refreshToken, TimeSpan.FromMinutes(_jwtSetting.RefreshTokenExpMinute));
+
+
+        var loginTokenDTO = new LoginTokenDTO()
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+        };
+
+        var loginResponse = new LoginResponse()
+        {
+            LoginTokenDTO = loginTokenDTO
+        };
+
+        return new Result<object>
+        {
+            Error = 0,
+            Message = "Refresh token successfully",
+            Data = loginResponse
         };
     }
 }
