@@ -251,7 +251,7 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
 
     public async Task<Result<object>> RefreshToken(string token)
     {
-        var email = _tokenGeneratorService.ValidateAndGetEmailFromToken(token);
+        var email = _tokenGeneratorService.ValidateAndGetEmailFromRefreshToken(token);
         if (email == null)
         {
             return new Result<object>
@@ -263,6 +263,23 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                        {
                            ErrorCode = MessagesList.LoginTimeout.GetErrorMessage().Code,
                            ErrorMessage = MessagesList.LoginTimeout.GetErrorMessage().Message
+                       }
+                    }
+            };
+        }
+
+        var oldRefreshToken = await _redisService.GetStringAsync($"RefreshToken:{email}");
+        if (token != oldRefreshToken)
+        {
+            return new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.LoginTimeout.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.LoginTimeout.GetErrorMessage().Code
                        }
                     }
             };

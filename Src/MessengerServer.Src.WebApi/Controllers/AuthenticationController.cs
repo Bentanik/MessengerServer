@@ -122,7 +122,7 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
 
         if (response == null)
         {
-            return Ok(new Result<object>
+            return Unauthorized(new Result<object>
             {
                 Error = 1,
                 Data = new List<ErrorResponse>

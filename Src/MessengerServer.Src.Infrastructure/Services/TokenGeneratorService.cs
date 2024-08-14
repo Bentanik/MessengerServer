@@ -45,7 +45,7 @@ public class TokenGeneratorService(IOptions<JwtSetting> jwtSetting) : ITokenGene
         return null;
     }
 
-    public string ValidateAndGetEmailFromToken(string refreshToken)
+    public string ValidateAndGetEmailFromRefreshToken(string refreshToken)
     {
         TokenValidationParameters validationParameters = new()
         {

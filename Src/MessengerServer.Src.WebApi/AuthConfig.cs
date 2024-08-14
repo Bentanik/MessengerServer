@@ -1,8 +1,12 @@
 ﻿namespace MessengerServer.Src.WebApi;
 
+using MessengerServer.Src.Contracts.ErrorResponses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Net;
 using System.Text;
+using System.Text.Json;
 
 public static class AuthConfig
 {
@@ -42,7 +46,7 @@ public static class AuthConfig
                        context.Response.Headers.Add("IS-TOKEN-EXPIRED", "true");
                    }
                    return Task.CompletedTask;
-               }
+               },
            };
        });
 

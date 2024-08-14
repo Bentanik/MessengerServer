@@ -8,5 +8,5 @@ public interface ITokenGeneratorService
     string GenerateToken(string secretKey, string issuer, string audience, double expirationMinutes, IEnumerable<Claim>? claims = null);
     string GenerateAccessToken(UserGenerateTokenDTO user);
     string GenerateRefreshToken(UserGenerateTokenDTO user);
-    string ValidateAndGetEmailFromToken(string refreshToken);
+    string ValidateAndGetEmailFromRefreshToken(string refreshToken);
 }
