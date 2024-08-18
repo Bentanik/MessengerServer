@@ -279,7 +279,7 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                        new()
                        {
                            ErrorCode = MessagesList.LoginTimeout.GetErrorMessage().Code,
-                           ErrorMessage = MessagesList.LoginTimeout.GetErrorMessage().Code
+                           ErrorMessage = MessagesList.LoginTimeout.GetErrorMessage().Message
                        }
                     }
             };

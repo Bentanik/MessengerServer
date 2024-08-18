@@ -6,7 +6,6 @@ using MessengerServer.Src.Contracts.Abstractions.AuthenticationRequests;
 using MessengerServer.Src.Contracts.Abstractions.AuthenticationResponses;
 using MessengerServer.Src.Contracts.ErrorResponses;
 using MessengerServer.Src.Contracts.MessagesList;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -86,11 +85,18 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
         });
     }
 
-    [Authorize]
     [HttpDelete("logout")]
     public async Task<IActionResult> Logout()
     {
         var email = User.FindFirstValue(ClaimTypes.Email);
+        if(email == null)
+        {
+            Response.Cookies.Delete("refreshToken");
+            return Ok(new Result<object>
+            {
+                Error = 0,
+            });
+        }
         var result = await _authenticationService.Logout(email);
         Response.Cookies.Delete("refreshToken");
         return Ok(result);

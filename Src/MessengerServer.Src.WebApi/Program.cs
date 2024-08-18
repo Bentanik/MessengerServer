@@ -1,5 +1,4 @@
 using MessengerServer.Src.WebApi;
-using MessengerServer.Src.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +25,6 @@ app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllers();
 

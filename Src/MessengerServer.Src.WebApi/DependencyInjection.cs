@@ -58,7 +58,7 @@ public static class DependencyInjection
         services.Configure<RedisSetting>(configuration.GetSection(RedisSetting.SectionName));
         services.Configure<JwtSetting>(configuration.GetSection(JwtSetting.SectionName));
         services.Configure<ClientSetting>(configuration.GetSection(ClientSetting.SectionName));
-
+        services.Configure<UpdateEmailSetting>(configuration.GetSection(UpdateEmailSetting.SectionName));
 
 
         return services;

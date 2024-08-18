@@ -48,5 +48,11 @@ public enum MessagesList
     LoginAgain,
 
     [Message("Login timeout expired, please login again", "lg02")]
-    LoginTimeout
+    LoginTimeout,
+
+    [Message("Update email successfully", "ue01")]
+    UpdateEmailSuccess,
+
+    [Message("Update email fail, please again!", "ue02")]
+    UpdateEmailFail,
 }

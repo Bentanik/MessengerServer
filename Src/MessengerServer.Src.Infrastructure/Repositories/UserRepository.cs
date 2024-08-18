@@ -33,4 +33,15 @@ public class UserRepository(AppDbContext context) : RepositoryBase<User>(context
     {
         return await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
+
+    public async Task<ViewUserProfilePrivateDTO> GetProfileUserPrivate(string email)
+    {
+        return await _appDbContext.Users.Select(u => new ViewUserProfilePrivateDTO
+        {
+           UserId = u.Id,
+           Email = u.Email,
+           FullName= u.FullName,
+           Biography = "",
+        }).FirstOrDefaultAsync(u => u.Email == email);
+    }
 }
