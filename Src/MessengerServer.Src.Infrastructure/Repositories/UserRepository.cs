@@ -41,7 +41,7 @@ public class UserRepository(AppDbContext context) : RepositoryBase<User>(context
            UserId = u.Id,
            Email = u.Email,
            FullName= u.FullName,
-           Biography = "",
+           Biography = u.Biography ?? "",
         }).FirstOrDefaultAsync(u => u.Email == email);
     }
 }

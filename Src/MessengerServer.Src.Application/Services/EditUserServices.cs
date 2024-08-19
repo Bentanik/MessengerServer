@@ -8,7 +8,8 @@ using Microsoft.Extensions.Options;
 
 namespace MessengerServer.Src.Application.Services;
 
-public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService, IEmailServices emailServices, IOptions<UpdateEmailSetting> updateEmailSetting, IOptions<ClientSetting> clientSetting) : IEditUserServices
+public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService, IEmailServices emailServices, IOptions<UpdateEmailSetting> updateEmailSetting, IOptions<ClientSetting> clientSetting)
+    : IEditUserServices
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IRedisService _redisService = redisService;
@@ -150,6 +151,78 @@ public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService
                        {
                            ErrorCode = MessagesList.UpdateEmailFail.GetErrorMessage().Code,
                            ErrorMessage = MessagesList.UpdateEmailFail.GetErrorMessage().Message
+                       }
+                    } : null
+        };
+    }
+
+    public async Task<Result<object>> UpdateFullNameUser(string email, string newFullName)
+    {
+        var user = await _unitOfWork.UserRepository.GetUserByEmail(email);
+        if (user == null)
+        {
+            return new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.UserNotExist.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.UserNotExist.GetErrorMessage().Message
+                       }
+                    }
+            };
+        }
+        user.FullName = newFullName;
+        var result = await _unitOfWork.SaveChangesAsync();
+
+        return new Result<object>
+        {
+            Error = result > 0 ? 0 : 1,
+            Message = result > 0 ? MessagesList.UpdateFullNameSuccess.GetErrorMessage().Message : null,
+            Data = result == 0 ? new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.UpdateFullNameFail.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.UpdateFullNameFail.GetErrorMessage().Message
+                       }
+                    } : null
+        };
+    }
+
+    public async Task<Result<object>> UpdateBiographyUser(string email, string biography)
+    {
+        var user = await _unitOfWork.UserRepository.GetUserByEmail(email);
+        if (user == null)
+        {
+            return new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.UserNotExist.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.UserNotExist.GetErrorMessage().Message
+                       }
+                    }
+            };
+        }
+        user.Biography = biography;
+        var result = await _unitOfWork.SaveChangesAsync();
+
+        return new Result<object>
+        {
+            Error = result > 0 ? 0 : 1,
+            Message = result > 0 ? MessagesList.UpdateBiographySuccess.GetErrorMessage().Message : null,
+            Data = result == 0 ? new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.UpdateBiographyFail.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.UpdateBiographyFail.GetErrorMessage().Message
                        }
                     } : null
         };

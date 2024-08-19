@@ -295,7 +295,6 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
         var refreshToken = _tokenGeneratorService.GenerateRefreshToken(userTokenGenerate);
         await _redisService.SetStringAsync($"RefreshToken:{email}", refreshToken, TimeSpan.FromMinutes(_jwtSetting.RefreshTokenExpMinute));
 
-
         var loginTokenDTO = new LoginTokenDTO()
         {
             AccessToken = accessToken,

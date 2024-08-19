@@ -80,4 +80,66 @@ public class EditUserController(IEditUserServices editUserServices) : Controller
         }
         return Ok(result);
     }
+
+    [Authorize]
+    [HttpPost("update_fullname")]
+    public async Task<IActionResult> UpdateFullNameUser([FromBody] EditFullNameRequest req)
+    {
+        var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        if (email == null)
+        {
+            return BadRequest(new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>()
+                {
+                   new()
+                   {
+                       ErrorCode = MessagesList.LoginAgain.GetErrorMessage().Code,
+                       ErrorMessage = MessagesList.LoginAgain.GetErrorMessage().Message
+                   }
+                }
+            });
+        }
+
+        var result = await _editUserServices.UpdateFullNameUser(email, req.FullName);
+
+        if (result.Error == 1)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPost("update_biography")]
+    public async Task<IActionResult> UpdateBiographyUser([FromBody] EditBiographyRequest req)
+    {
+        var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        if (email == null)
+        {
+            return BadRequest(new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>()
+                {
+                   new()
+                   {
+                       ErrorCode = MessagesList.LoginAgain.GetErrorMessage().Code,
+                       ErrorMessage = MessagesList.LoginAgain.GetErrorMessage().Message
+                   }
+                }
+            });
+        }
+
+        var result = await _editUserServices.UpdateBiographyUser(email, req.Biography);
+
+        if (result.Error == 1)
+        {
+            return BadRequest(result);
+        };
+
+        return Ok(result);
+    }
 }

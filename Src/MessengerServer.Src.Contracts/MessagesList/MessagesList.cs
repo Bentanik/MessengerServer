@@ -55,4 +55,16 @@ public enum MessagesList
 
     [Message("Update email fail, please again!", "ue02")]
     UpdateEmailFail,
+
+    [Message("Update full name successfully", "ufn01")]
+    UpdateFullNameSuccess,
+
+    [Message("Update full name fail, please again!", "ufn02")]
+    UpdateFullNameFail,
+
+    [Message("Update biography successfully", "ubp01")]
+    UpdateBiographySuccess,
+
+    [Message("Update biography fail", "ubp02")]
+    UpdateBiographyFail,
 }
