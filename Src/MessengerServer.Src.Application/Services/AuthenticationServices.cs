@@ -139,7 +139,13 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
         if (userDto != null) userDto.UserId = Guid.NewGuid();
 
         var userMapper = userDto?.ToUser();
-        if (userMapper != null) _unitOfWork.UserRepository.Add(userMapper);
+       
+        if (userMapper != null)
+        {
+            userMapper.CropAvatar = "unknown.jpg";
+            userMapper.FullAvatar = "unknown.jpg";
+            _unitOfWork.UserRepository.Add(userMapper);
+        }
 
         var result = await _unitOfWork.SaveChangesAsync();
         if (result != 0)
@@ -224,6 +230,7 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
             UserId = emailExsits.Id,
             FullName = emailExsits.FullName,
             Email = emailExsits.Email,
+            Avatar = emailExsits.CropAvatar,
         };
 
         var loginResponse = new LoginResponse()
