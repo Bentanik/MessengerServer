@@ -13,7 +13,7 @@ using MessengerServer.Src.Contracts.Abstractions.AuthenticationResponses;
 
 namespace MessengerServer.Src.Application.Services;
 
-public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unitOfWork, IEmailServices emailServices, IRedisService redisService, ITokenGeneratorService tokenGeneratorService, IOptions<ClientSetting> clientSetting, IOptions<JwtSetting> jwtSetting) : IAuthenticationServices
+public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unitOfWork, IEmailServices emailServices, IRedisService redisService, ITokenGeneratorService tokenGeneratorService, IOptions<ClientSetting> clientSetting, IOptions<JwtSetting> jwtSetting, IOptions<MediaSetting> mediaSetting) : IAuthenticationServices
 {
     private readonly IPasswordHash _passwordHash = passwordHash;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -22,6 +22,7 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
     private readonly ClientSetting _clientSetting = clientSetting.Value;
     private readonly JwtSetting _jwtSetting = jwtSetting.Value;
     private readonly ITokenGeneratorService _tokenGeneratorService = tokenGeneratorService;
+    private readonly MediaSetting _mediaSetting = mediaSetting.Value;
 
     public async Task<Result<object>> Register(RegisterDTO registerDto)
     {
@@ -139,11 +140,11 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
         if (userDto != null) userDto.UserId = Guid.NewGuid();
 
         var userMapper = userDto?.ToUser();
-       
+
         if (userMapper != null)
         {
-            userMapper.CropAvatar = "unknown.jpg";
-            userMapper.FullAvatar = "unknown.jpg";
+            userMapper.CropAvatar = $"{_mediaSetting.PathSystem}/crop_avatar_unknown.jpg";
+            userMapper.FullAvatar = $"{_mediaSetting.PathSystem}/full_avatar_unknown.jpg";
             _unitOfWork.UserRepository.Add(userMapper);
         }
 
