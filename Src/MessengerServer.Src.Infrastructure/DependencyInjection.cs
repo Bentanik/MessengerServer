@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailServices, EmailService>();
         services.AddScoped<IRedisService, RedisService>();
         services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();
+        services.AddScoped<IMediaService, MediaService>();  
 
         services.AddDbContext<AppDbContext>(option => option.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
         return services;

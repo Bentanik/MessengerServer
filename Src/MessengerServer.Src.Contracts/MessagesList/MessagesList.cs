@@ -67,4 +67,10 @@ public enum MessagesList
 
     [Message("Update biography fail", "ubp02")]
     UpdateBiographyFail,
+
+    [Message("Upload avatar successfully", "upa01")]
+    UploadAvatarSuccessfully,
+
+    [Message("Upload avatar fail", "upa02")]
+    UploadAvatarFail
 }

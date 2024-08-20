@@ -59,6 +59,7 @@ public static class DependencyInjection
         services.Configure<JwtSetting>(configuration.GetSection(JwtSetting.SectionName));
         services.Configure<ClientSetting>(configuration.GetSection(ClientSetting.SectionName));
         services.Configure<UpdateEmailSetting>(configuration.GetSection(UpdateEmailSetting.SectionName));
+        services.Configure<MediaSetting>(configuration.GetSection(MediaSetting.SectionName));
 
 
         return services;

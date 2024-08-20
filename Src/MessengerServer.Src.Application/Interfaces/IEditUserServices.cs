@@ -1,4 +1,5 @@
 ﻿using MessengerServer.Src.Contracts.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace MessengerServer.Src.Application.Interfaces;
 
@@ -9,5 +10,7 @@ public interface IEditUserServices
     Task<Result<object>> ActiveUpdateEmailUser(string email);
     Task<Result<object>> UpdateFullNameUser(string email, string newFullName);
     Task<Result<object>> UpdateBiographyUser(string email, string biography);
+
+    Task<Result<object>> UpdateAvatarUser(string email, string nameFile, IFormFile cropAvatarFile, IFormFile fullAvatarFile);
 
 }

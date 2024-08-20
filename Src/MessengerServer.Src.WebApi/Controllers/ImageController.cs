@@ -7,18 +7,8 @@ namespace MessengerServer.Src.WebApi.Controllers;
 [Route("api/image")]
 public class ImageController : ControllerBase
 {
-    private readonly string _imagePath;
-    public ImageController()
-    {
-        _imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Uploads/Avatar");
-        if (!Directory.Exists(_imagePath))
-        {
-            Directory.CreateDirectory(_imagePath);
-        }
-    }
-
-    [HttpGet("get_image")]
-    public async Task<IActionResult> GetImage([FromQuery] string fileName)
+    [HttpGet("get_image_avatar")]
+    public IActionResult GetImageAvatar([FromQuery] string fileName)
     {
         if (fileName.IsNullOrEmpty() == true)
         {
@@ -29,7 +19,7 @@ public class ImageController : ControllerBase
             });
         }
 
-        var filePath = Path.Combine(_imagePath, fileName);
+        var filePath = Path.Combine(fileName);
         if (!System.IO.File.Exists(filePath))
         {
             return NotFound();

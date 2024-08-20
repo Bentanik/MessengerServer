@@ -142,4 +142,35 @@ public class EditUserController(IEditUserServices editUserServices) : Controller
 
         return Ok(result);
     }
+
+    [Authorize]
+    [HttpPost("update_avatar")]
+    public async Task<IActionResult> UpdateAvatarUser([FromForm] EditAvatarRequest req)
+    {
+        var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        if (email == null)
+        {
+            return BadRequest(new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>()
+                {
+                   new()
+                   {
+                       ErrorCode = MessagesList.LoginAgain.GetErrorMessage().Code,
+                       ErrorMessage = MessagesList.LoginAgain.GetErrorMessage().Message
+                   }
+                }
+            });
+        }
+
+        var result = await _editUserServices.UpdateAvatarUser(email, req.FileName, req.CropFileAvatar, req.FullFileAvatar);
+
+        if (result.Error == 1)
+        {
+            return BadRequest(result);
+        };
+
+        return Ok(result);
+    }
 }

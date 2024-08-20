@@ -4,18 +4,21 @@ using MessengerServer.Src.Contracts.Abstractions;
 using MessengerServer.Src.Contracts.ErrorResponses;
 using MessengerServer.Src.Contracts.MessagesList;
 using MessengerServer.Src.Contracts.Settings;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace MessengerServer.Src.Application.Services;
 
-public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService, IEmailServices emailServices, IOptions<UpdateEmailSetting> updateEmailSetting, IOptions<ClientSetting> clientSetting)
+public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService, IEmailServices emailServices, IOptions<UpdateEmailSetting> updateEmailSetting, IOptions<ClientSetting> clientSetting, IOptions<MediaSetting> mediaSetting, IMediaService mediaService)
     : IEditUserServices
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IRedisService _redisService = redisService;
     private readonly IEmailServices _emailServices = emailServices;
+    private readonly IMediaService _mediaService = mediaService;
     private readonly UpdateEmailSetting _updateEmailSetting = updateEmailSetting.Value;
     private readonly ClientSetting _clientSetting = clientSetting.Value;
+    private readonly MediaSetting _mediaSetting = mediaSetting.Value;
 
     public async Task<Result<object>> GetProfilePrivate(string email)
     {
@@ -225,6 +228,68 @@ public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService
                            ErrorMessage = MessagesList.UpdateBiographyFail.GetErrorMessage().Message
                        }
                     } : null
+        };
+    }
+
+    public async Task<Result<object>> UpdateAvatarUser(string email, string nameFile, IFormFile cropAvatarFile, IFormFile fullAvatarFile)
+    {
+        var user = await _unitOfWork.UserRepository.GetUserByEmail(email);
+        if (user == null)
+        {
+            return new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.UserNotExist.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.UserNotExist.GetErrorMessage().Message
+                       }
+                    }
+            };
+        }
+
+        string fileExtension = Path.GetExtension(cropAvatarFile.FileName);
+        string newCropAvatarName = "crop_" + nameFile + fileExtension;
+        string newFullAvatarName = "full_" + nameFile + fileExtension;
+        string pathSave = $"{_mediaSetting.PathUser}/{user.Id}";
+
+        var isSaveAvatar = await _mediaService.SaveAvatarAsync(pathSave, newCropAvatarName, newFullAvatarName, cropAvatarFile, fullAvatarFile);
+        if (isSaveAvatar == false)
+        {
+            return new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.UploadAvatarFail.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.UploadAvatarFail.GetErrorMessage().Message
+                       }
+                    }
+            };
+        }
+
+        user.CropAvatar =  $"{pathSave}/{newCropAvatarName}";
+        user.FullAvatar = $"{pathSave}/{newFullAvatarName}";
+
+        _unitOfWork.UserRepository.Update(user);
+        var result = await _unitOfWork.SaveChangesAsync();
+
+        return new Result<object>
+        {
+            Error = result > 0 ? 0 : 1,
+            Message = result > 0 ? MessagesList.UploadAvatarSuccessfully.GetErrorMessage().Message : null,
+            Data = result == 0 ? new List<ErrorResponse>
+            {
+                new()
+                {
+                    ErrorCode = MessagesList.UploadAvatarFail.GetErrorMessage().Code,
+                    ErrorMessage = MessagesList.UploadAvatarFail.GetErrorMessage().Message
+                }
+            } : null
         };
     }
 }
