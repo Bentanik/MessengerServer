@@ -250,9 +250,12 @@ public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService
             };
         }
 
+        DateTime dateTime = DateTime.UtcNow;
+        long unixTimestamp = new DateTimeOffset(dateTime).ToUnixTimeSeconds();
+
         string fileExtension = Path.GetExtension(cropAvatarFile.FileName);
-        string newCropAvatarName = "crop_" + nameFile + fileExtension;
-        string newFullAvatarName = "full_" + nameFile + fileExtension;
+        string newCropAvatarName = $"crop_{nameFile}_{unixTimestamp}{fileExtension}";
+        string newFullAvatarName = $"full_{nameFile}_{unixTimestamp}{fileExtension}";
         string pathSave = $"{_mediaSetting.PathUser}/{user.Id}";
 
         var isSaveAvatar = await _mediaService.SaveAvatarAsync(pathSave, newCropAvatarName, newFullAvatarName, cropAvatarFile, fullAvatarFile);
@@ -271,6 +274,7 @@ public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService
                     }
             };
         }
+      
 
         user.CropAvatar =  $"{pathSave}/{newCropAvatarName}";
         user.FullAvatar = $"{pathSave}/{newFullAvatarName}";
@@ -289,7 +293,7 @@ public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService
                     ErrorCode = MessagesList.UploadAvatarFail.GetErrorMessage().Code,
                     ErrorMessage = MessagesList.UploadAvatarFail.GetErrorMessage().Message
                 }
-            } : null
+            } : $"{pathSave}/{newCropAvatarName}"
         };
     }
 }

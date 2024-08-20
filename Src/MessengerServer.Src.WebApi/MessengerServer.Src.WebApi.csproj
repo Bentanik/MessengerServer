@@ -24,8 +24,4 @@
     <ProjectReference Include="..\MessengerServer.Src.Infrastructure\MessengerServer.Src.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\Uploads\Users\" />
-  </ItemGroup>
-
 </Project>
