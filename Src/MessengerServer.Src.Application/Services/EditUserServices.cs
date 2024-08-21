@@ -258,7 +258,7 @@ public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService
         string newFullAvatarName = $"full_{nameFile}_{unixTimestamp}{fileExtension}";
         string pathSave = $"{_mediaSetting.PathUser}/{user.Id}";
 
-        var isSaveAvatar = await _mediaService.SaveAvatarAsync(pathSave, newCropAvatarName, newFullAvatarName, cropAvatarFile, fullAvatarFile);
+        var isSaveAvatar = await _mediaService.SaveAvatarCoverPhotoAsync(pathSave, newCropAvatarName, newFullAvatarName, cropAvatarFile, fullAvatarFile);
         if (isSaveAvatar == false)
         {
             return new Result<object>
@@ -294,6 +294,72 @@ public class EditUserServices(IUnitOfWork unitOfWork, IRedisService redisService
                     ErrorMessage = MessagesList.UploadAvatarFail.GetErrorMessage().Message
                 }
             } : $"{pathSave}/{newCropAvatarName}"
+        };
+    }
+
+    public async Task<Result<object>> UpdateCoverPhoto(string email, string nameFile, IFormFile cropCoverPhotoFile, IFormFile fullCoverPhotoFile)
+    {
+        var user = await _unitOfWork.UserRepository.GetUserByEmail(email);
+        if (user == null)
+        {
+            return new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.UserNotExist.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.UserNotExist.GetErrorMessage().Message
+                       }
+                    }
+            };
+        }
+
+        DateTime dateTime = DateTime.UtcNow;
+        long unixTimestamp = new DateTimeOffset(dateTime).ToUnixTimeSeconds();
+
+        string fileExtension = Path.GetExtension(cropCoverPhotoFile.FileName);
+        string newCropCoverPhotoName = $"crop_{nameFile}_{unixTimestamp}{fileExtension}";
+        string newFullCoverPhotoName = $"full_{nameFile}_{unixTimestamp}{fileExtension}";
+        string pathSave = $"{_mediaSetting.PathUser}/{user.Id}";
+
+        var isSaveAvatar = await _mediaService.SaveAvatarCoverPhotoAsync(pathSave, newCropCoverPhotoName, newFullCoverPhotoName, cropCoverPhotoFile, fullCoverPhotoFile);
+        if (isSaveAvatar == false)
+        {
+            return new Result<object>
+            {
+                Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.UploadAvatarFail.GetErrorMessage().Code,
+                           ErrorMessage = MessagesList.UploadAvatarFail.GetErrorMessage().Message
+                       }
+                    }
+            };
+        }
+
+
+        user.CropCoverPhoto = $"{pathSave}/{newCropCoverPhotoName}";
+        user.FullCoverPhoto = $"{pathSave}/{newFullCoverPhotoName}";
+
+        _unitOfWork.UserRepository.Update(user);
+        var result = await _unitOfWork.SaveChangesAsync();
+
+        return new Result<object>
+        {
+            Error = result > 0 ? 0 : 1,
+            Message = result > 0 ? MessagesList.UploadAvatarSuccessfully.GetErrorMessage().Message : null,
+            Data = result == 0 ? new List<ErrorResponse>
+            {
+                new()
+                {
+                    ErrorCode = MessagesList.UploadAvatarFail.GetErrorMessage().Code,
+                    ErrorMessage = MessagesList.UploadAvatarFail.GetErrorMessage().Message
+                }
+            } : $"{pathSave}/{newCropCoverPhotoName}"
         };
     }
 }

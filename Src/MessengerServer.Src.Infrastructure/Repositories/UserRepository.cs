@@ -44,4 +44,14 @@ public class UserRepository(AppDbContext context) : RepositoryBase<User>(context
            Biography = u.Biography ?? "",
         }).FirstOrDefaultAsync(u => u.Email == email);
     }
+
+    public async Task<ViewUserProfileDTO> GetProfileUser(string email)
+    {
+        return await _appDbContext.Users.Where(u => u.Email == email).Select(u => new ViewUserProfileDTO
+        {
+            UserId = u.Id,
+            FullName = u.FullName,
+            CropCoverPhoto = u.CropCoverPhoto,
+        }).FirstOrDefaultAsync();
+    }
 }

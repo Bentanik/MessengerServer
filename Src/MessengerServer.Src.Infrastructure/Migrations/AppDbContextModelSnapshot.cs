@@ -37,11 +37,17 @@ namespace MessengerServer.Src.Infrastructure.Migrations
                     b.Property<string>("CropAvatar")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CropCoverPhoto")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullAvatar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullCoverPhoto")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")

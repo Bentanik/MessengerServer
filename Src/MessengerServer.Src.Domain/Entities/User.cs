@@ -8,4 +8,6 @@ public class User : BaseEntity
     public string? Biography { get; set; }
     public string? CropAvatar { get; set; }
     public string? FullAvatar { get; set; }
+    public string? CropCoverPhoto { get; set; }
+    public string? FullCoverPhoto { get; set; }
 }

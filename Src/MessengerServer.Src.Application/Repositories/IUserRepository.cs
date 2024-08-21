@@ -10,4 +10,6 @@ public interface IUserRepository : IRepositoryBase<User>
     Task<ViewEmailFullNameDTO> GetInfoEmailFullNameByEmail(string email);
     Task<User> GetUserByEmail(string email);
     Task<ViewUserProfilePrivateDTO> GetProfileUserPrivate(string email);
+    Task<ViewUserProfileDTO> GetProfileUser(string email);
+
 }

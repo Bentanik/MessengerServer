@@ -12,5 +12,6 @@ public interface IEditUserServices
     Task<Result<object>> UpdateBiographyUser(string email, string biography);
 
     Task<Result<object>> UpdateAvatarUser(string email, string nameFile, IFormFile cropAvatarFile, IFormFile fullAvatarFile);
+    Task<Result<object>> UpdateCoverPhoto(string email, string nameFile, IFormFile cropCoverPhotoFile, IFormFile fullCoverPhotoFile);
 
 }

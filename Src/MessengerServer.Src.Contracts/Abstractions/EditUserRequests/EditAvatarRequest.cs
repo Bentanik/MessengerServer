@@ -2,9 +2,9 @@
 
 namespace MessengerServer.Src.Contracts.Abstractions.EditUserRequests;
 
-public class EditAvatarRequest
+public class EditCoverPhotoRequest
 {
     public string? FileName { get; set; }
-    public IFormFile? CropFileAvatar { get; set; }
-    public IFormFile? FullFileAvatar { get; set; }
+    public IFormFile? CropFileCoverPhoto { get; set; }
+    public IFormFile? FullFileCoverPhoto { get; set; }
 }
