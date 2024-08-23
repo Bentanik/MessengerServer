@@ -29,12 +29,12 @@ public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : 
         _context.Set<TEntity>().AddRange(model);
     }
 
-    public TEntity? GetId(int id)
+    public TEntity? GetId(Guid id)
     {
         return _context.Set<TEntity>().Find(id);
     }
 
-    public async Task<TEntity?> GetIdAsync(int id)
+    public async Task<TEntity?> GetByIdAsync(Guid id)
     {
         return await _context.Set<TEntity>().FindAsync(id);
     }

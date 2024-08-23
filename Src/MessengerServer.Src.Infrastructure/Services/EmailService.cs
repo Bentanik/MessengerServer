@@ -11,7 +11,7 @@ public class EmailService(IOptions<EmailSetting> emailConfig) : IEmailServices
 {
     private readonly EmailSetting _emailConfig = emailConfig.Value;
 
-    public async Task<bool> SendMail(string toEmail, string subject, string templateName, Dictionary<string, string> Body)
+    public async Task<bool> SendMailAsync(string toEmail, string subject, string templateName, Dictionary<string, string> Body)
     {
         var email = new MimeMessage();
         email.From.Add(MailboxAddress.Parse(_emailConfig.EmailUsername));

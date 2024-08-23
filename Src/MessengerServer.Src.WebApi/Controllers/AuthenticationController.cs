@@ -1,4 +1,3 @@
-using Azure;
 using MessengerServer.Src.Application.Interfaces;
 using MessengerServer.Src.Application.MapExtensions.AuthenticationMapExtensions;
 using MessengerServer.Src.Contracts.Abstractions;
@@ -18,25 +17,25 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
     private readonly IAuthenticationServices _authenticationService = authenticationService;
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest req)
+    public async Task<IActionResult> RegisterApi([FromBody] RegisterRequest req)
     {
         var registerDto = req.ToRegisterDTO();
-        var result = await _authenticationService.Register(registerDto);
+        var result = await _authenticationService.RegisterService(registerDto);
         return Ok(result);
     }
 
     [HttpGet("active_account")]
-    public async Task<IActionResult> ActiveAccount([FromQuery] string email)
+    public async Task<IActionResult> ActiveAccountApi([FromQuery] string email)
     {
-        var result = await _authenticationService.ActiveAccount(email);
+        var result = await _authenticationService.ActiveAccountService(email);
         return Ok(result);
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest req)
+    public async Task<IActionResult> LoginApi([FromBody] LoginRequest req)
     {
         var loginDTO = req.ToLoginDTO();
-        var serviceLogin = await _authenticationService.Login(loginDTO);
+        var serviceLogin = await _authenticationService.LoginService(loginDTO);
 
         if (serviceLogin?.Error == 1)
         {
@@ -54,8 +53,8 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.LoginAgain.GetErrorMessage().Code,
-                           ErrorMessage = MessagesList.LoginAgain.GetErrorMessage().Message
+                           ErrorCode = MessagesList.LoginAgain.GetMessage().Code,
+                           ErrorMessage = MessagesList.LoginAgain.GetMessage().Message
                        }
                     }
             });
@@ -72,7 +71,7 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
         return Ok(new Result<object>
         {
             Error = 0,
-            Message = "Login successfully",
+            Message = "LoginService successfully",
             Data = new
             {
                 Token = new
@@ -86,10 +85,10 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
     }
 
     [HttpDelete("logout")]
-    public async Task<IActionResult> Logout()
+    public async Task<IActionResult> LogoutApi()
     {
-        var email = User.FindFirstValue(ClaimTypes.Email);
-        if(email == null)
+        var userId = User.FindFirstValue("UserId");
+        if(userId == null)
         {
             Response.Cookies.Delete("refreshToken");
             return Ok(new Result<object>
@@ -97,16 +96,17 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
                 Error = 0,
             });
         }
-        var result = await _authenticationService.Logout(email);
+        var result = await _authenticationService.LogoutService(userId);
         Response.Cookies.Delete("refreshToken");
         return Ok(result);
     }
 
     [HttpPut("refresh_token")]
-    public async Task<IActionResult> RefreshToken()
+    public async Task<IActionResult> RefreshTokenApi()
     {
         var refreshToken = Request.Cookies["refreshToken"];
         if (refreshToken == null)
+        {
             return Unauthorized(new Result<object>
             {
                 Error = 1,
@@ -114,13 +114,15 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.LoginTimeout.GetErrorMessage().Code,
-                           ErrorMessage = MessagesList.LoginTimeout.GetErrorMessage().Message
+                           ErrorCode = MessagesList.LoginTimeout.GetMessage().Code,
+                           ErrorMessage = MessagesList.LoginTimeout.GetMessage().Message
                        }
                     }
             });
+        }
+            
 
-        var serviceRefreshToken = await _authenticationService.RefreshToken(refreshToken);
+        var serviceRefreshToken = await _authenticationService.RefreshTokenService(refreshToken);
         if (serviceRefreshToken.Error == 1)
             return Unauthorized(serviceRefreshToken);
 
@@ -135,8 +137,8 @@ public class AuthenticationController(IAuthenticationServices authenticationServ
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.LoginAgain.GetErrorMessage().Code,
-                           ErrorMessage = MessagesList.LoginAgain.GetErrorMessage().Message
+                           ErrorCode = MessagesList.LoginAgain.GetMessage().Code,
+                           ErrorMessage = MessagesList.LoginAgain.GetMessage().Message
                        }
                     }
             });

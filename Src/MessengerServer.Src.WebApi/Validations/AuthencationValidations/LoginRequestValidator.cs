@@ -10,25 +10,25 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
     {
         RuleFor(x => x.Password)
              .NotEmpty()
-             .WithErrorCode(MessagesList.MissingFullName.GetErrorMessage().Code)
-             .WithMessage(MessagesList.MissingPassword.GetErrorMessage().Message).DependentRules(() =>
+             .WithErrorCode(MessagesList.MissingFullName.GetMessage().Code)
+             .WithMessage(MessagesList.MissingPassword.GetMessage().Message).DependentRules(() =>
              {
                  RuleFor(x => x.Password)
                       .MinimumLength(6)
-                      .WithErrorCode(MessagesList.PasswordMinimumLengthSix.GetErrorMessage().Code)
-                      .WithMessage(MessagesList.PasswordMinimumLengthSix.GetErrorMessage().Message);
+                      .WithErrorCode(MessagesList.PasswordMinimumLengthSix.GetMessage().Code)
+                      .WithMessage(MessagesList.PasswordMinimumLengthSix.GetMessage().Message);
              });
 
         RuleFor(x => x.Email)
             .NotEmpty()
-            .WithErrorCode(MessagesList.MissingEmail.GetErrorMessage().Code)
-            .WithMessage(MessagesList.MissingEmail.GetErrorMessage().Message)
+            .WithErrorCode(MessagesList.MissingEmail.GetMessage().Code)
+            .WithMessage(MessagesList.MissingEmail.GetMessage().Message)
             .DependentRules(() =>
             {
                 RuleFor(x => x.Email)
                     .EmailAddress()
-                    .WithErrorCode(MessagesList.NotFormatEmail.GetErrorMessage().Code)
-                    .WithMessage(MessagesList.NotFormatEmail.GetErrorMessage().Message);
+                    .WithErrorCode(MessagesList.NotFormatEmail.GetMessage().Code)
+                    .WithMessage(MessagesList.NotFormatEmail.GetMessage().Message);
             });
     }
 }

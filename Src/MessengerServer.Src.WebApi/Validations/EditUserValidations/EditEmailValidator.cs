@@ -10,14 +10,14 @@ public class EditEmailValidator : AbstractValidator<EditEmailRequest>
     {
         RuleFor(x => x.Email)
             .NotEmpty()
-            .WithErrorCode(MessagesList.MissingEmail.GetErrorMessage().Code)
-            .WithMessage(MessagesList.MissingEmail.GetErrorMessage().Message)
+            .WithErrorCode(MessagesList.MissingEmail.GetMessage().Code)
+            .WithMessage(MessagesList.MissingEmail.GetMessage().Message)
             .DependentRules(() =>
             {
                 RuleFor(x => x.Email)
                     .EmailAddress()
-                    .WithErrorCode(MessagesList.NotFormatEmail.GetErrorMessage().Code)
-                    .WithMessage(MessagesList.NotFormatEmail.GetErrorMessage().Message);
+                    .WithErrorCode(MessagesList.NotFormatEmail.GetMessage().Code)
+                    .WithMessage(MessagesList.NotFormatEmail.GetMessage().Message);
             });
     }
 }

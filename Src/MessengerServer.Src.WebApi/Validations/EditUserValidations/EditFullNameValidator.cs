@@ -10,7 +10,7 @@ public class EditFullNameValidator : AbstractValidator<EditFullNameRequest>
     {
         RuleFor(x => x.FullName)
           .NotEmpty()
-          .WithErrorCode(MessagesList.MissingFullName.GetErrorMessage().Code)
-          .WithMessage(MessagesList.MissingFullName.GetErrorMessage().Message);
+          .WithErrorCode(MessagesList.MissingFullName.GetMessage().Code)
+          .WithMessage(MessagesList.MissingFullName.GetMessage().Message);
     }
 }

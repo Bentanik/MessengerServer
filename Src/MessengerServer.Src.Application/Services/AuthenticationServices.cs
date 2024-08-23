@@ -13,9 +13,10 @@ using MessengerServer.Src.Contracts.Abstractions.AuthenticationResponses;
 
 namespace MessengerServer.Src.Application.Services;
 
-public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unitOfWork, IEmailServices emailServices, IRedisService redisService, ITokenGeneratorService tokenGeneratorService, IOptions<ClientSetting> clientSetting, IOptions<JwtSetting> jwtSetting, IOptions<MediaSetting> mediaSetting) : IAuthenticationServices
+public class AuthenticationServices(IPasswordHashService passwordHash, IUnitOfWork unitOfWork, IEmailServices emailServices, IRedisService redisService, ITokenGeneratorService tokenGeneratorService, IOptions<ClientSetting> clientSetting, IOptions<JwtSetting> jwtSetting, IOptions<MediaSetting> mediaSetting) 
+    : IAuthenticationServices
 {
-    private readonly IPasswordHash _passwordHash = passwordHash;
+    private readonly IPasswordHashService _passwordHash = passwordHash;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IEmailServices _emailServices = emailServices;
     private readonly IRedisService _redisService = redisService;
@@ -24,10 +25,10 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
     private readonly ITokenGeneratorService _tokenGeneratorService = tokenGeneratorService;
     private readonly MediaSetting _mediaSetting = mediaSetting.Value;
 
-    public async Task<Result<object>> Register(RegisterDTO registerDto)
+    public async Task<Result<object>> RegisterService(RegisterDTO registerDto)
     {
-        var emailExsits = await _unitOfWork.UserRepository.IsUserExistsByEmail(registerDto.Email);
-        var fullNameExsits = await _unitOfWork.UserRepository.IsUserExistsByFullName(registerDto.FullName);
+        var emailExsits = await _unitOfWork.UserRepository.IsUserExistsByEmailAsync(registerDto.Email);
+        var fullNameExsits = await _unitOfWork.UserRepository.IsUserExistsByFullNameAsync(registerDto.FullName);
 
         //Check duplicate email or full name
         if (emailExsits || fullNameExsits)
@@ -38,8 +39,8 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
             {
                 listError.Add(new()
                 {
-                    ErrorCode = MessagesList.EmailExsits.GetErrorMessage().Code,
-                    ErrorMessage = MessagesList.EmailExsits.GetErrorMessage().Message
+                    ErrorCode = MessagesList.EmailExsits.GetMessage().Code,
+                    ErrorMessage = MessagesList.EmailExsits.GetMessage().Message
                 });
             }
             //If full name duplicate
@@ -47,8 +48,8 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
             {
                 listError.Add(new()
                 {
-                    ErrorCode = MessagesList.FullNameExsits.GetErrorMessage().Code,
-                    ErrorMessage = MessagesList.FullNameExsits.GetErrorMessage().Message,
+                    ErrorCode = MessagesList.FullNameExsits.GetMessage().Code,
+                    ErrorMessage = MessagesList.FullNameExsits.GetMessage().Message,
                 });
             };
 
@@ -62,7 +63,7 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
         registerDto.Password = _passwordHash.HashPassword(registerDto.Password);
 
         //Send mail
-        var sendMail = await _emailServices.SendMail(registerDto.Email, "Sign up account", "EmailRegister.html", new Dictionary<string, string> {
+        var sendMail = await _emailServices.SendMailAsync(registerDto.Email, "Sign up account", "EmailRegister.html", new Dictionary<string, string> {
             { "ToEmail", registerDto.Email},
             {"Link", $"{_clientSetting.ClientUrl}/{_clientSetting.ClientActiveAccount}/{registerDto.Email}" }
         });
@@ -77,8 +78,8 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                 Data = new List<ErrorResponse>
                 {
                     new() {
-                        ErrorCode = MessagesList.EmailSendingFailed.GetErrorMessage().Code,
-                        ErrorMessage = MessagesList.EmailSendingFailed.GetErrorMessage().Message,
+                        ErrorCode = MessagesList.EmailSendingFailed.GetMessage().Code,
+                        ErrorMessage = MessagesList.EmailSendingFailed.GetMessage().Message,
                     }
                 }
             };
@@ -90,14 +91,13 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
         return new Result<object>
         {
             Error = 0,
-            Message = MessagesList.Register.GetErrorMessage().Message,
+            Message = MessagesList.Register.GetMessage().Message,
             Data = null
         };
     }
-
-    public async Task<Result<object>> ActiveAccount(string email)
+    public async Task<Result<object>> ActiveAccountService(string email)
     {
-        var emailExsits = await _unitOfWork.UserRepository.IsUserExistsByEmail(email);
+        var emailExsits = await _unitOfWork.UserRepository.IsUserExistsByEmailAsync(email);
         //Email exists in the system 
         if (emailExsits)
         {
@@ -109,8 +109,8 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                 {
                    new()
                    {
-                       ErrorCode = MessagesList.EmailExsits.GetErrorMessage().Code,
-                       ErrorMessage = MessagesList.EmailExsits.GetErrorMessage().Message
+                       ErrorCode = MessagesList.EmailExsits.GetMessage().Code,
+                       ErrorMessage = MessagesList.EmailExsits.GetMessage().Message
                    }
                 }
             };
@@ -128,8 +128,8 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                 {
                    new()
                    {
-                       ErrorCode = MessagesList.ActiveRegisterFail.GetErrorMessage().Code,
-                       ErrorMessage = MessagesList.ActiveRegisterFail.GetErrorMessage().Message
+                       ErrorCode = MessagesList.ActiveRegisterFail.GetMessage().Code,
+                       ErrorMessage = MessagesList.ActiveRegisterFail.GetMessage().Message
                    }
                 }
             };
@@ -157,21 +157,20 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
         return new Result<object>
         {
             Error = result > 0 ? 0 : 1,
-            Message = result > 0 ? MessagesList.RegisterSuccess.GetErrorMessage().Message : null,
+            Message = result > 0 ? MessagesList.RegisterSuccess.GetMessage().Message : null,
             Data = result == 0 ? new List<ErrorResponse>
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.RegisterFail.GetErrorMessage().Code,
-                           ErrorMessage = MessagesList.RegisterFail.GetErrorMessage().Message
+                           ErrorCode = MessagesList.RegisterFail.GetMessage().Code,
+                           ErrorMessage = MessagesList.RegisterFail.GetMessage().Message
                        }
                     } : null
         };
     }
-
-    public async Task<Result<object>> Login(LoginDTO loginDto)
+    public async Task<Result<object>> LoginService(LoginDTO loginDto)
     {
-        var emailExsits = await _unitOfWork.UserRepository.GetUserByEmail(loginDto.Email);
+        var emailExsits = await _unitOfWork.UserRepository.GetUserByEmailAsync(loginDto.Email);
         //Check email not exist
         if (emailExsits == null)
         {
@@ -182,8 +181,8 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.UserNotExist.GetErrorMessage().Code,
-                           ErrorMessage = MessagesList.UserNotExist.GetErrorMessage().Message
+                           ErrorCode = MessagesList.UserNotExist.GetMessage().Code,
+                           ErrorMessage = MessagesList.UserNotExist.GetMessage().Message
                        }
                     }
             };
@@ -200,8 +199,8 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.PasswordNotMatch.GetErrorMessage().Code,
-                           ErrorMessage = MessagesList.PasswordNotMatch.GetErrorMessage().Message
+                           ErrorCode = MessagesList.PasswordNotMatch.GetMessage().Code,
+                           ErrorMessage = MessagesList.PasswordNotMatch.GetMessage().Message
                        }
                     }
             };
@@ -209,7 +208,7 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
 
         UserGenerateTokenDTO userTokenGenerate = new()
         {
-            Email = loginDto.Email,
+            UserId = emailExsits.Id,
             RoleName = "User",
         };
 
@@ -218,7 +217,7 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
         //Generate refresh token
         var refreshToken = _tokenGeneratorService.GenerateRefreshToken(userTokenGenerate);
 
-        await _redisService.SetStringAsync($"RefreshToken:{loginDto.Email}", refreshToken, TimeSpan.FromMinutes(_jwtSetting.RefreshTokenExpMinute));
+        await _redisService.SetStringAsync($"RefreshTokenService:{emailExsits.Id}", refreshToken, TimeSpan.FromMinutes(_jwtSetting.RefreshTokenExpMinute));
 
         var loginTokenDTO = new LoginTokenDTO()
         {
@@ -246,21 +245,19 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
             Data = loginResponse
         };
     }
-
-    public async Task<Result<object>> Logout(string email)
+    public async Task<Result<object>> LogoutService(string userId)
     {
-        await _redisService.DeleteKeyAsync($"RefreshToken:{email}");
+        await _redisService.DeleteKeyAsync($"RefreshTokenService:{userId}");
         return new Result<object>
         {
             Error = 0,
-            Message = "Logout successfully",
+            Message = "LogoutService successfully",
         };
     }
-
-    public async Task<Result<object>> RefreshToken(string token)
+    public async Task<Result<object>> RefreshTokenService(string token)
     {
-        var email = _tokenGeneratorService.ValidateAndGetEmailFromRefreshToken(token);
-        if (email == null)
+        var userId = _tokenGeneratorService.ValidateAndGetUserIdFromRefreshToken(token);
+        if (userId == null)
         {
             return new Result<object>
             {
@@ -269,14 +266,14 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.LoginTimeout.GetErrorMessage().Code,
-                           ErrorMessage = MessagesList.LoginTimeout.GetErrorMessage().Message
+                           ErrorCode = MessagesList.LoginTimeout.GetMessage().Code,
+                           ErrorMessage = MessagesList.LoginTimeout.GetMessage().Message
                        }
                     }
             };
         }
 
-        var oldRefreshToken = await _redisService.GetStringAsync($"RefreshToken:{email}");
+        var oldRefreshToken = await _redisService.GetStringAsync($"RefreshTokenService:{userId}");
         if (token != oldRefreshToken)
         {
             return new Result<object>
@@ -286,8 +283,8 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.LoginTimeout.GetErrorMessage().Code,
-                           ErrorMessage = MessagesList.LoginTimeout.GetErrorMessage().Message
+                           ErrorCode = MessagesList.LoginTimeout.GetMessage().Code,
+                           ErrorMessage = MessagesList.LoginTimeout.GetMessage().Message
                        }
                     }
             };
@@ -295,13 +292,13 @@ public class AuthenticationServices(IPasswordHash passwordHash, IUnitOfWork unit
 
         UserGenerateTokenDTO userTokenGenerate = new()
         {
-            Email = email,
+            UserId = Guid.Parse(userId),
             RoleName = "User",
         };
 
         var accessToken = _tokenGeneratorService.GenerateAccessToken(userTokenGenerate);
         var refreshToken = _tokenGeneratorService.GenerateRefreshToken(userTokenGenerate);
-        await _redisService.SetStringAsync($"RefreshToken:{email}", refreshToken, TimeSpan.FromMinutes(_jwtSetting.RefreshTokenExpMinute));
+        await _redisService.SetStringAsync($"RefreshTokenService:{userId}", refreshToken, TimeSpan.FromMinutes(_jwtSetting.RefreshTokenExpMinute));
 
         var loginTokenDTO = new LoginTokenDTO()
         {

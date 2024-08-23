@@ -26,7 +26,7 @@ public class TokenGeneratorService(IOptions<JwtSetting> jwtSetting) : ITokenGene
     public string GenerateAccessToken(UserGenerateTokenDTO user)
     {
         List<Claim> claims = new() {
-            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("UserId", user.UserId.ToString()),
             new Claim(ClaimTypes.Role, user.RoleName)
         };
         if (_jwtSetting.AccessSecretToken != null && _jwtSetting.Issuer != null && _jwtSetting.Audience != null)
@@ -37,7 +37,7 @@ public class TokenGeneratorService(IOptions<JwtSetting> jwtSetting) : ITokenGene
     public string GenerateRefreshToken(UserGenerateTokenDTO user)
     {
         List<Claim> claims = new() {
-            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("UserId", user.UserId.ToString()),
             new Claim(ClaimTypes.Role, user.RoleName)
         };
         if (_jwtSetting.RefreshSecretToken != null && _jwtSetting.Issuer != null && _jwtSetting.Audience != null)
@@ -45,7 +45,7 @@ public class TokenGeneratorService(IOptions<JwtSetting> jwtSetting) : ITokenGene
         return null;
     }
 
-    public string ValidateAndGetEmailFromRefreshToken(string refreshToken)
+    public string ValidateAndGetUserIdFromRefreshToken(string refreshToken)
     {
         TokenValidationParameters validationParameters = new()
         {
@@ -62,8 +62,8 @@ public class TokenGeneratorService(IOptions<JwtSetting> jwtSetting) : ITokenGene
         try
         {
             var principal = tokenHandler.ValidateToken(refreshToken, validationParameters, out SecurityToken validatedToken);
-            var emailClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-            return emailClaim?.Value;
+            var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "UserId");
+            return userIdClaim?.Value;
         }
         catch (Exception)
         {

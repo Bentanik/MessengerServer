@@ -13,7 +13,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IPasswordHash, PasswordHash>();
+        services.AddScoped<IPasswordHashService, PasswordHash>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IEmailServices, EmailService>();
         services.AddScoped<IRedisService, RedisService>();

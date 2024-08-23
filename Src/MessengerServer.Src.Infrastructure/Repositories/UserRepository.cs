@@ -9,7 +9,7 @@ public class UserRepository(AppDbContext context) : RepositoryBase<User>(context
 {
     private readonly AppDbContext _appDbContext = context;
 
-    public async Task<ViewEmailFullNameDTO> GetInfoEmailFullNameByEmail(string email)
+    public async Task<ViewEmailFullNameDTO> GetInfoEmailFullNameByEmailAsync(string email)
     {
         return await _appDbContext.Users.Select(u => new ViewEmailFullNameDTO
         {
@@ -19,39 +19,40 @@ public class UserRepository(AppDbContext context) : RepositoryBase<User>(context
         }).FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    public async Task<bool> IsUserExistsByEmail(string email)
+    public async Task<bool> IsUserExistsByEmailAsync(string email)
     {
         return await _appDbContext.Users.AnyAsync(u => u.Email == email);
     }
 
-    public async Task<bool> IsUserExistsByFullName(string fullName)
+    public async Task<bool> IsUserExistsByFullNameAsync(string fullName)
     {
         return await _appDbContext.Users.AnyAsync(u => u.FullName == fullName);
     }
 
-    public async Task<User> GetUserByEmail(string email)
+    public async Task<User> GetUserByEmailAsync(string email)
     {
         return await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    public async Task<ViewUserProfilePrivateDTO> GetProfileUserPrivate(string email)
+    public async Task<ViewUserProfilePrivateDTO> GetProfileUserPrivateByUserIdAsync(Guid userId)
     {
-        return await _appDbContext.Users.Select(u => new ViewUserProfilePrivateDTO
+        return await _appDbContext.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new ViewUserProfilePrivateDTO
         {
-           UserId = u.Id,
-           Email = u.Email,
-           FullName= u.FullName,
-           Biography = u.Biography ?? "",
-        }).FirstOrDefaultAsync(u => u.Email == email);
+            UserId = u.Id,
+            Email = u.Email,
+            FullName = u.FullName,
+            Biography = u.Biography ?? "",
+        }).FirstOrDefaultAsync();
     }
 
-    public async Task<ViewUserProfileDTO> GetProfileUser(string email)
+    public async Task<ViewUserProfileDTO> GetProfileUserPublicByUserIdAsync(Guid UserId)
     {
-        return await _appDbContext.Users.Where(u => u.Email == email).Select(u => new ViewUserProfileDTO
+        return await _appDbContext.Users.AsNoTracking().Where(u => u.Id == UserId).Select(u => new ViewUserProfileDTO
         {
             UserId = u.Id,
             FullName = u.FullName,
             CropCoverPhoto = u.CropCoverPhoto,
+            CropAvatar = u.CropAvatar,
         }).FirstOrDefaultAsync();
     }
 }

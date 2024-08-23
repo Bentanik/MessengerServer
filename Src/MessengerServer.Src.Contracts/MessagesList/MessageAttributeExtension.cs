@@ -9,10 +9,10 @@ sealed class MessageAttribute(string message, string code) : Attribute
 
 public static class MessageAttributeExtension
 {
-    public static (string Message, string Code) GetErrorMessage(this MessagesList errorCode)
+    public static (string Message, string Code) GetMessage(this MessagesList messageCode)
     {
         var type = typeof(MessagesList);
-        var field = type.GetField(errorCode.ToString());
+        var field = type.GetField(messageCode.ToString());
 
         var attribute = (MessageAttribute?)field?.GetCustomAttributes(typeof(MessageAttribute), false).FirstOrDefault();
         return attribute != null ? (attribute.Message, attribute.Code) : (string.Empty, string.Empty);

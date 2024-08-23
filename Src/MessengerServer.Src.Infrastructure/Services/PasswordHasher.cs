@@ -2,7 +2,7 @@
 
 namespace MessengerServer.Src.Infrastructure.Services;
 
-public class PasswordHash : IPasswordHash
+public class PasswordHash : IPasswordHashService
 {
     private readonly int workFactor = 13; 
     public string HashPassword(string password)

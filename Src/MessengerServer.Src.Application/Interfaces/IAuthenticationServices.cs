@@ -5,9 +5,9 @@ namespace MessengerServer.Src.Application.Interfaces;
 
 public interface IAuthenticationServices
 {
-    Task<Result<object>> Register(RegisterDTO registerDto);
-    Task<Result<object>> ActiveAccount(string email);
-    Task<Result<object>> Login(LoginDTO loginDto);
-    Task<Result<object>> Logout(string email);
-    Task<Result<object>> RefreshToken(string token);
+    Task<Result<object>> RegisterService(RegisterDTO registerDto);
+    Task<Result<object>> ActiveAccountService(string email);
+    Task<Result<object>> LoginService(LoginDTO loginDto);
+    Task<Result<object>> LogoutService(string userId);
+    Task<Result<object>> RefreshTokenService(string token);
 }
