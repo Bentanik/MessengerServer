@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MessengerServer.Src.Domain\MessengerServer.Src.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MessengerServer.Src.WebApi.Controllers;
 
 [ApiController]
-[Route("api/user/profile")]
+[Route("api/profile")]
 public class ProfileUserController(IProfileUserServices profileUserServices) : ControllerBase
 {
     private readonly IProfileUserServices _profileUserServices = profileUserServices;

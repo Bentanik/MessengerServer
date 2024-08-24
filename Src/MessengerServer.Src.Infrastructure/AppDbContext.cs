@@ -13,12 +13,28 @@ public class AppDbContext : DbContext
     { }
 
     #region DbSet
-    public DbSet<User> Users { get; set; }
+    public DbSet<UserEntity> Users { get; set; }
+    public DbSet<FriendshipEntity> Friendships { get; set; }
     #endregion
 
     #region OnModelCreating
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<FriendshipEntity>()
+            .HasOne(f => f.UserInitiated)
+            .WithMany(u => u.FriendshipsInitiated)
+            .HasForeignKey(f => f.UserInitId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<FriendshipEntity>()
+            .HasOne(f => f.UserReceived)
+            .WithMany(u => u.FriendshipsReceived)
+            .HasForeignKey(f => f.UserReceiveId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<FriendshipEntity>()
+            .HasIndex(f => new { f.UserInitId, f.UserReceiveId })
+            .IsUnique();
     }
     #endregion
 }

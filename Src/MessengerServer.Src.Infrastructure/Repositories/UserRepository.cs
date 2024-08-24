@@ -5,7 +5,7 @@ using MessengerServer.Src.Contracts.DTOs.UserDTOs;
 
 namespace MessengerServer.Src.Infrastructure.Repositories;
 
-public class UserRepository(AppDbContext context) : RepositoryBase<User>(context), IUserRepository
+public class UserRepository(AppDbContext context) : RepositoryBase<UserEntity>(context), IUserRepository
 {
     private readonly AppDbContext _appDbContext = context;
 
@@ -18,22 +18,18 @@ public class UserRepository(AppDbContext context) : RepositoryBase<User>(context
             FullName = u.FullName
         }).FirstOrDefaultAsync(u => u.Email == email);
     }
-
     public async Task<bool> IsUserExistsByEmailAsync(string email)
     {
         return await _appDbContext.Users.AnyAsync(u => u.Email == email);
     }
-
     public async Task<bool> IsUserExistsByFullNameAsync(string fullName)
     {
         return await _appDbContext.Users.AnyAsync(u => u.FullName == fullName);
     }
-
-    public async Task<User> GetUserByEmailAsync(string email)
+    public async Task<UserEntity> GetUserByEmailAsync(string email)
     {
         return await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
-
     public async Task<ViewUserProfilePrivateDTO> GetProfileUserPrivateByUserIdAsync(Guid userId)
     {
         return await _appDbContext.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new ViewUserProfilePrivateDTO
@@ -44,7 +40,6 @@ public class UserRepository(AppDbContext context) : RepositoryBase<User>(context
             Biography = u.Biography ?? "",
         }).FirstOrDefaultAsync();
     }
-
     public async Task<ViewUserProfileDTO> GetProfileUserPublicByUserIdAsync(Guid UserId)
     {
         return await _appDbContext.Users.AsNoTracking().Where(u => u.Id == UserId).Select(u => new ViewUserProfileDTO

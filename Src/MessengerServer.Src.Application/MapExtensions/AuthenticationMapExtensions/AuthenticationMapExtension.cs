@@ -25,9 +25,9 @@ public static class AuthenticationMapExtension
         };
     }
 
-    public static User ToUser(this RegisterDTO registerDTO)
+    public static UserEntity ToUser(this RegisterDTO registerDTO)
     {
-        var user = new User
+        var user = new UserEntity
         {
             Email = registerDTO.Email,
             FullName = registerDTO.FullName,

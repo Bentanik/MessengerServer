@@ -209,7 +209,7 @@ public class AuthenticationServices(IPasswordHashService passwordHash, IUnitOfWo
         UserGenerateTokenDTO userTokenGenerate = new()
         {
             UserId = emailExsits.Id,
-            RoleName = "User",
+            RoleName = "UserEntity",
         };
 
         //Generate access token
@@ -293,7 +293,7 @@ public class AuthenticationServices(IPasswordHashService passwordHash, IUnitOfWo
         UserGenerateTokenDTO userTokenGenerate = new()
         {
             UserId = Guid.Parse(userId),
-            RoleName = "User",
+            RoleName = "UserEntity",
         };
 
         var accessToken = _tokenGeneratorService.GenerateAccessToken(userTokenGenerate);

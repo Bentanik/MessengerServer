@@ -1,6 +1,6 @@
 ﻿namespace MessengerServer.Src.Domain.Entities;
 
-public class User : BaseEntity
+public class UserEntity : BaseEntity
 {
     public required string FullName { get; set; }
     public required string Email { get; set; }
@@ -10,4 +10,6 @@ public class User : BaseEntity
     public string? FullAvatar { get; set; }
     public string? CropCoverPhoto { get; set; }
     public string? FullCoverPhoto { get; set; }
+    public ICollection<FriendshipEntity>? FriendshipsInitiated { get; set; }
+    public ICollection<FriendshipEntity>? FriendshipsReceived { get; set; }
 }

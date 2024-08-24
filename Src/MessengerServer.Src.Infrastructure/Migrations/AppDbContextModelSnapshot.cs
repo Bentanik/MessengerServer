@@ -22,7 +22,38 @@ namespace MessengerServer.Src.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MessengerServer.Src.Domain.Entities.User", b =>
+            modelBuilder.Entity("MessengerServer.Src.Domain.Entities.FriendshipEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserInitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserReceiveId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserReceiveId");
+
+                    b.HasIndex("UserInitId", "UserReceiveId")
+                        .IsUnique();
+
+                    b.ToTable("Friendships");
+                });
+
+            modelBuilder.Entity("MessengerServer.Src.Domain.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,6 +95,32 @@ namespace MessengerServer.Src.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("MessengerServer.Src.Domain.Entities.FriendshipEntity", b =>
+                {
+                    b.HasOne("MessengerServer.Src.Domain.Entities.UserEntity", "UserInitiated")
+                        .WithMany("FriendshipsInitiated")
+                        .HasForeignKey("UserInitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MessengerServer.Src.Domain.Entities.UserEntity", "UserReceived")
+                        .WithMany("FriendshipsReceived")
+                        .HasForeignKey("UserReceiveId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("UserInitiated");
+
+                    b.Navigation("UserReceived");
+                });
+
+            modelBuilder.Entity("MessengerServer.Src.Domain.Entities.UserEntity", b =>
+                {
+                    b.Navigation("FriendshipsInitiated");
+
+                    b.Navigation("FriendshipsReceived");
                 });
 #pragma warning restore 612, 618
         }

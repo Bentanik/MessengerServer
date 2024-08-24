@@ -72,5 +72,14 @@ public enum MessagesList
     UploadAvatarSuccessfully,
 
     [Message("Upload avatar fail", "upa02")]
-    UploadAvatarFail
+    UploadAvatarFail,
+
+    [Message("Add friend successfully", "adfr01")]
+    AddFriendSuccessfully,
+
+    [Message("Add friend fail", "adfr02")]
+    AddFriendFail,
+
+    [Message("Add friend fail", "adfr03")]
+    AddFriendFail02
 }
