@@ -14,6 +14,8 @@ public static class DependencyInjection
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+        services.AddScoped<INotificationAddFriendRepository, NotificationAddFriendRepository>();
+        services.AddScoped<IHubNotificationService, HubNotificationService>();
         services.AddScoped<IPasswordHashService, PasswordHash>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IEmailServices, EmailService>();

@@ -14,4 +14,8 @@
     <ProjectReference Include="..\MessengerServer.Src.Domain\MessengerServer.Src.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstractions\Notificiation\" />
+  </ItemGroup>
+
 </Project>

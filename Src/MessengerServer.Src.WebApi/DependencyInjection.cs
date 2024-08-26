@@ -31,6 +31,7 @@ public static class DependencyInjection
                  options.JsonSerializerOptions.WriteIndented = true;
              });
 
+
         services.AddCors(options =>
         {
             options.AddPolicy("AllowSpecificOrigin",

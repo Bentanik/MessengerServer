@@ -1,5 +1,6 @@
 ﻿using MessengerServer.Src.Application.Interfaces;
 using MessengerServer.Src.Contracts.Abstractions;
+using MessengerServer.Src.Contracts.DTOs.UserDTOs;
 using MessengerServer.Src.Contracts.ErrorResponses;
 using MessengerServer.Src.Contracts.MessagesList;
 using MessengerServer.Src.Domain.Entities;
@@ -14,8 +15,8 @@ public class UserServices(IUnitOfWork unitOfWork) : IUserServices
     public async Task<Result<object>> AddFriendService(Guid userId1, Guid userId2)
     {
         var isExitFriend = await _unitOfWork.FriendshipRepository.IsExistFriend(userId1, userId2);
-        
-        if(isExitFriend)
+
+        if (isExitFriend)
         {
             return new Result<object>
             {
@@ -31,25 +32,36 @@ public class UserServices(IUnitOfWork unitOfWork) : IUserServices
             };
         }
 
-        var friendshipEntity = new FriendshipEntity {
+        var friendshipEntity = new FriendshipEntity
+        {
             UserInitId = userId1,
             UserReceiveId = userId2,
             Status = FriendshipStatusEnum.Pending,
         };
         _unitOfWork.FriendshipRepository.Add(friendshipEntity);
         var result = await _unitOfWork.SaveChangesAsync();
-        return new Result<object>
+        if (result == 0)
         {
-            Error = result > 0 ? 0 : 1,
-            Message = result > 0 ? MessagesList.AddFriendSuccessfully.GetMessage().Message : null,
-            Data = result == 0 ? new List<ErrorResponse>
+            return new Result<object>
+            {
+                Error = 0,
+                Data = new List<ErrorResponse>
                     {
                        new()
                        {
                            ErrorCode = MessagesList.AddFriendFail.GetMessage().Code,
                            ErrorMessage = MessagesList.AddFriendFail.GetMessage().Message
                        }
-                    } : null
+                    }
+            };
+        }
+        var userAddedFriend = await _unitOfWork.UserRepository.GetInfoUserAddedFriendByUserIdAsync(userId2);
+
+        return new Result<object>
+        {
+            Error = 0,
+            Message = MessagesList.AddFriendSuccessfully.GetMessage().Message,
+            Data = userAddedFriend,
         };
     }
 

@@ -1,4 +1,5 @@
 using MessengerServer.Src.WebApi;
+using MessengerServer.Src.WebApi.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,5 +28,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("hub/notification");
 
 app.Run();

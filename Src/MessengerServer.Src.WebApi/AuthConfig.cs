@@ -1,5 +1,4 @@
 ﻿namespace MessengerServer.Src.WebApi;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -9,6 +8,12 @@ public static class AuthConfig
 {
     public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSignalR()
+           .AddJsonProtocol(options =>
+           {
+               options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+           });
+
         var jwtSettings = configuration.GetSection("JwtSetting");
         var secretKey = jwtSettings.GetValue<string>("AccessSecretToken");
         var issuer = jwtSettings.GetValue<string>("Issuer");

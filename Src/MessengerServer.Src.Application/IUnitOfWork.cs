@@ -7,4 +7,5 @@ public interface IUnitOfWork
     Task<int> SaveChangesAsync();
     IUserRepository UserRepository { get; }
     IFriendshipRepository FriendshipRepository { get; }
+    INotificationAddFriendRepository NotificationAddFriendRepository { get; }
 }

@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     #region DbSet
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<FriendshipEntity> Friendships { get; set; }
+    public DbSet<NotificationAddFriendEntitiy> NotificationAddFriends { get; set; }
     #endregion
 
     #region OnModelCreating

@@ -11,4 +11,5 @@ public interface IUserRepository : IRepositoryBase<UserEntity>
     Task<UserEntity> GetUserByEmailAsync(string email);
     Task<ViewUserProfilePrivateDTO> GetProfileUserPrivateByUserIdAsync(Guid userId);
     Task<ViewUserProfileDTO> GetProfileUserPublicByUserIdAsync(Guid UserId);
+    Task<ViewUserAddedFriendDTO> GetInfoUserAddedFriendByUserIdAsync(Guid userId);
 }

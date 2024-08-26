@@ -8,15 +8,14 @@ namespace MessengerServer.Src.Infrastructure.Repositories;
 public class UserRepository(AppDbContext context) : RepositoryBase<UserEntity>(context), IUserRepository
 {
     private readonly AppDbContext _appDbContext = context;
-
     public async Task<ViewEmailFullNameDTO> GetInfoEmailFullNameByEmailAsync(string email)
     {
-        return await _appDbContext.Users.Select(u => new ViewEmailFullNameDTO
+        return await _appDbContext.Users.Where(u => u.Email == email).Select(u => new ViewEmailFullNameDTO
         {
             Id = u.Id,
             Email = u.Email,
             FullName = u.FullName
-        }).FirstOrDefaultAsync(u => u.Email == email);
+        }).FirstOrDefaultAsync();
     }
     public async Task<bool> IsUserExistsByEmailAsync(string email)
     {
@@ -47,6 +46,15 @@ public class UserRepository(AppDbContext context) : RepositoryBase<UserEntity>(c
             UserId = u.Id,
             FullName = u.FullName,
             CropCoverPhoto = u.CropCoverPhoto,
+            CropAvatar = u.CropAvatar,
+        }).FirstOrDefaultAsync();
+    }
+    public async Task<ViewUserAddedFriendDTO> GetInfoUserAddedFriendByUserIdAsync(Guid userId)
+    {
+        return await _appDbContext.Users.Where(u => u.Id == userId).Select(u => new ViewUserAddedFriendDTO
+        {
+            UserId = u.Id,
+            FullName = u.FullName,
             CropAvatar = u.CropAvatar,
         }).FirstOrDefaultAsync();
     }
