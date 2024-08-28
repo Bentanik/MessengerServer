@@ -60,6 +60,35 @@ namespace MessengerServer.Src.Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "NotificationAddFriends",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FromUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ToUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NotificationType = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationAddFriends", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NotificationAddFriends_Users_FromUserId",
+                        column: x => x.FromUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_NotificationAddFriends_Users_ToUserId",
+                        column: x => x.ToUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Friendships_UserInitId_UserReceiveId",
                 table: "Friendships",
@@ -70,6 +99,16 @@ namespace MessengerServer.Src.Infrastructure.Migrations
                 name: "IX_Friendships_UserReceiveId",
                 table: "Friendships",
                 column: "UserReceiveId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NotificationAddFriends_FromUserId",
+                table: "NotificationAddFriends",
+                column: "FromUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NotificationAddFriends_ToUserId",
+                table: "NotificationAddFriends",
+                column: "ToUserId");
         }
 
         /// <inheritdoc />
@@ -77,6 +116,9 @@ namespace MessengerServer.Src.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Friendships");
+
+            migrationBuilder.DropTable(
+                name: "NotificationAddFriends");
 
             migrationBuilder.DropTable(
                 name: "Users");

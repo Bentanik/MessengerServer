@@ -79,6 +79,10 @@ namespace MessengerServer.Src.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FromUserId");
+
+                    b.HasIndex("ToUserId");
+
                     b.ToTable("NotificationAddFriends");
                 });
 
@@ -145,11 +149,34 @@ namespace MessengerServer.Src.Infrastructure.Migrations
                     b.Navigation("UserReceived");
                 });
 
+            modelBuilder.Entity("MessengerServer.Src.Domain.Entities.NotificationAddFriendEntitiy", b =>
+                {
+                    b.HasOne("MessengerServer.Src.Domain.Entities.UserEntity", "FromUser")
+                        .WithMany("SentNotificationAddFriends")
+                        .HasForeignKey("FromUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MessengerServer.Src.Domain.Entities.UserEntity", "ToUser")
+                        .WithMany("ReceivedNotificationAddFriends")
+                        .HasForeignKey("ToUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FromUser");
+
+                    b.Navigation("ToUser");
+                });
+
             modelBuilder.Entity("MessengerServer.Src.Domain.Entities.UserEntity", b =>
                 {
                     b.Navigation("FriendshipsInitiated");
 
                     b.Navigation("FriendshipsReceived");
+
+                    b.Navigation("ReceivedNotificationAddFriends");
+
+                    b.Navigation("SentNotificationAddFriends");
                 });
 #pragma warning restore 612, 618
         }

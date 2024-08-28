@@ -8,4 +8,6 @@ public class NotificationAddFriendEntitiy : BaseEntity
     public Guid ToUserId { get; set; }
     public NotificationTypeEnum NotificationType { get; set; }
     public bool Status { get; set; } //Status is watch user have read notification?
+    public UserEntity FromUser { get; set; }
+    public UserEntity ToUser { get; set; }
 }

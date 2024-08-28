@@ -33,6 +33,6 @@ public class NotificationHub(INotificationService notificationService) : Hub
     }
     public async Task CountNotification(Guid userId)
     {
-        await _notificationService.CountNotification(userId);
+        await _notificationService.CountNotificationService(userId);
     }
 }

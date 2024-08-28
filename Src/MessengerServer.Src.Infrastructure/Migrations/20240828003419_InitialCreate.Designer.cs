@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MessengerServer.Src.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240824193138_InitialCreate")]
+    [Migration("20240828003419_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -54,6 +54,39 @@ namespace MessengerServer.Src.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Friendships");
+                });
+
+            modelBuilder.Entity("MessengerServer.Src.Domain.Entities.NotificationAddFriendEntitiy", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("FromUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NotificationType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ToUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromUserId");
+
+                    b.HasIndex("ToUserId");
+
+                    b.ToTable("NotificationAddFriends");
                 });
 
             modelBuilder.Entity("MessengerServer.Src.Domain.Entities.UserEntity", b =>
@@ -119,11 +152,34 @@ namespace MessengerServer.Src.Infrastructure.Migrations
                     b.Navigation("UserReceived");
                 });
 
+            modelBuilder.Entity("MessengerServer.Src.Domain.Entities.NotificationAddFriendEntitiy", b =>
+                {
+                    b.HasOne("MessengerServer.Src.Domain.Entities.UserEntity", "FromUser")
+                        .WithMany("SentNotificationAddFriends")
+                        .HasForeignKey("FromUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MessengerServer.Src.Domain.Entities.UserEntity", "ToUser")
+                        .WithMany("ReceivedNotificationAddFriends")
+                        .HasForeignKey("ToUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FromUser");
+
+                    b.Navigation("ToUser");
+                });
+
             modelBuilder.Entity("MessengerServer.Src.Domain.Entities.UserEntity", b =>
                 {
                     b.Navigation("FriendshipsInitiated");
 
                     b.Navigation("FriendshipsReceived");
+
+                    b.Navigation("ReceivedNotificationAddFriends");
+
+                    b.Navigation("SentNotificationAddFriends");
                 });
 #pragma warning restore 612, 618
         }

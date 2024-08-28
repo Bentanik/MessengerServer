@@ -12,4 +12,6 @@ public class UserEntity : BaseEntity
     public string? FullCoverPhoto { get; set; }
     public ICollection<FriendshipEntity>? FriendshipsInitiated { get; set; }
     public ICollection<FriendshipEntity>? FriendshipsReceived { get; set; }
+    public ICollection<NotificationAddFriendEntitiy> SentNotificationAddFriends { get; set; }
+    public ICollection<NotificationAddFriendEntitiy> ReceivedNotificationAddFriends { get; set; }
 }

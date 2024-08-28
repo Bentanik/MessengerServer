@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace MessengerServer.Src.Infrastructure;
-
 public class AppDbContext : DbContext
 {
     public AppDbContext()
@@ -21,6 +20,7 @@ public class AppDbContext : DbContext
     #region OnModelCreating
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        #region FriendshipEntity
         modelBuilder.Entity<FriendshipEntity>()
             .HasOne(f => f.UserInitiated)
             .WithMany(u => u.FriendshipsInitiated)
@@ -36,6 +36,21 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<FriendshipEntity>()
             .HasIndex(f => new { f.UserInitId, f.UserReceiveId })
             .IsUnique();
+        #endregion
+
+        #region NotificationAddFriendEntitiy
+        modelBuilder.Entity<NotificationAddFriendEntitiy>()
+            .HasOne(n => n.FromUser)
+            .WithMany(u => u.SentNotificationAddFriends)
+            .HasForeignKey(n => n.FromUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<NotificationAddFriendEntitiy>()
+            .HasOne(n => n.ToUser)
+            .WithMany(u => u.ReceivedNotificationAddFriends)
+            .HasForeignKey(n => n.ToUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        #endregion
     }
     #endregion
 }

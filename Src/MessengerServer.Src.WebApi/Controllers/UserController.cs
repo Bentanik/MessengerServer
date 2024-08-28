@@ -40,7 +40,7 @@ public class UserController(IUserServices userServices, INotificationService not
             FromUserId = Guid.Parse(userId),
             ToUserId = friendUserId,
         };
-        await _notificationService.PushNotificationFriend(viewUserAddedFriendDTO, addNotificationFriendDTO);
+        await _notificationService.PushNotificationFriendService(viewUserAddedFriendDTO, addNotificationFriendDTO);
         result.Data = null;
         return Ok(result);
     }
@@ -59,6 +59,69 @@ public class UserController(IUserServices userServices, INotificationService not
             });
         }
         var result = await _userServices.GetStatusFriendService(Guid.Parse(userId), friendUserId);
+        if (result.Error == 1)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPut("accept_friend")]
+    public async Task<IActionResult> AcceptFriendApi([FromQuery] Guid userReceiveId)
+    {
+        var userId = User.FindFirstValue("UserId");
+        if (userId == null)
+        {
+            Response.Cookies.Delete("refreshToken");
+            return Ok(new Result<object>
+            {
+                Error = 0,
+            });
+        }
+        var result = await _userServices.AcceptFriendService(Guid.Parse(userId), userReceiveId);
+        if (result.Error == 1)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPut("reject_friend")]
+    public async Task<IActionResult> RejectFriendApi([FromQuery] Guid userReceiveId)
+    {
+        var userId = User.FindFirstValue("UserId");
+        if (userId == null)
+        {
+            Response.Cookies.Delete("refreshToken");
+            return Ok(new Result<object>
+            {
+                Error = 0,
+            });
+        }
+        var result = await _userServices.RejectFriendService(Guid.Parse(userId), userReceiveId);
+        if (result.Error == 1)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpDelete("unfriend")]
+    public async Task<IActionResult> UnfriendApi([FromQuery] Guid userReceiveId)
+    {
+        var userId = User.FindFirstValue("UserId");
+        if (userId == null)
+        {
+            Response.Cookies.Delete("refreshToken");
+            return Ok(new Result<object>
+            {
+                Error = 0,
+            });
+        }
+        var result = await _userServices.UnfriendService(Guid.Parse(userId), userReceiveId);
         if (result.Error == 1)
         {
             return BadRequest(result);

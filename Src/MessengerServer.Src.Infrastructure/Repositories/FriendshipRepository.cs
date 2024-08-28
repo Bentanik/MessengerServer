@@ -5,7 +5,9 @@ using MessengerServer.Src.Contracts.DTOs.FriendshipDTOs;
 
 namespace MessengerServer.Src.Infrastructure.Repositories;
 
-public class FriendshipRepository(AppDbContext context) : RepositoryBase<FriendshipEntity>(context), IFriendshipRepository
+public class FriendshipRepository(AppDbContext context) : 
+    RepositoryBase<FriendshipEntity>(context), 
+    IFriendshipRepository
 {
     private readonly AppDbContext _appDbContext = context;
 
@@ -16,7 +18,7 @@ public class FriendshipRepository(AppDbContext context) : RepositoryBase<Friends
            
     }
 
-    public async Task<GetFriendshipDTO> GetFriendshipAsync(Guid userInitId, Guid userReceiveId)
+    public async Task<GetFriendshipDTO> GetFriendshipDTOAsync(Guid userInitId, Guid userReceiveId)
     {
         return await _appDbContext.Friendships.AsNoTracking()
             .Where(fr => fr.UserInitId == userInitId && fr.UserReceiveId == userReceiveId ||
@@ -30,5 +32,14 @@ public class FriendshipRepository(AppDbContext context) : RepositoryBase<Friends
                 Status = fr.Status,
             })
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<FriendshipEntity> GetFriendshipAsync(Guid userInitId, Guid userReceiveId)
+    {
+        return await _appDbContext.Friendships
+            .AsNoTracking()
+            .FirstOrDefaultAsync(fr => fr.UserInitId == userInitId && fr.UserReceiveId == userReceiveId ||
+                 fr.UserInitId == userReceiveId && fr.UserReceiveId == userInitId
+            );
     }
 }
