@@ -367,4 +367,13 @@ public class ProfileUserServices(IUnitOfWork unitOfWork, IRedisService redisServ
             } : $"{pathSave}/{newCropCoverPhotoName}"
         };
     }
+    public async Task<Result<object>> GetNumbersOfFriendService(Guid userId)
+    {
+        var result = await _unitOfWork.FriendshipRepository.GetNumbersOfFriendByUserIdAsync(userId);
+        return new Result<object>
+        {
+            Error = 0,
+            Data = result,
+        };
+    }
 }

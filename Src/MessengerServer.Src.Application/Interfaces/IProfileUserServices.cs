@@ -13,4 +13,5 @@ public interface IProfileUserServices
     Task<Result<object>> UpdateBiographyUserService(Guid userId, string biography);
     Task<Result<object>> UpdateAvatarUserService(Guid userId, string nameFile, IFormFile cropAvatarFile, IFormFile fullAvatarFile);
     Task<Result<object>> UpdateCoverPhotoService(Guid userId, string nameFile, IFormFile cropCoverPhotoFile, IFormFile fullCoverPhotoFile);
+    Task<Result<object>> GetNumbersOfFriendService(Guid userId);
 }

@@ -55,7 +55,7 @@ public class UserServices(IUnitOfWork unitOfWork)
                     }
             };
         }
-        var userAddedFriend = await _unitOfWork.UserRepository.GetInfoUserAddedFriendByUserIdAsync(userId2);
+        var userAddedFriend = await _unitOfWork.UserRepository.GetInfoUserAddedFriendByUserIdAsync(userId1);
 
         return new Result<object>
         {

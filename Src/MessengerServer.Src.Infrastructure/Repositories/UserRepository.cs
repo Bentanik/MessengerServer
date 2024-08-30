@@ -39,9 +39,9 @@ public class UserRepository(AppDbContext context) : RepositoryBase<UserEntity>(c
             Biography = u.Biography ?? "",
         }).FirstOrDefaultAsync();
     }
-    public async Task<ViewUserProfileDTO> GetProfileUserPublicByUserIdAsync(Guid UserId)
+    public async Task<ViewUserProfileDTO> GetProfileUserPublicByUserIdAsync(Guid userId)
     {
-        return await _appDbContext.Users.AsNoTracking().Where(u => u.Id == UserId).Select(u => new ViewUserProfileDTO
+        return await _appDbContext.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new ViewUserProfileDTO
         {
             UserId = u.Id,
             FullName = u.FullName,

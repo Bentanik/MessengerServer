@@ -45,6 +45,13 @@ public class ProfileUserController(IProfileUserServices profileUserServices) : C
         return Ok(result);
     }
 
+    [HttpGet("get_numbers_friend")]
+    public async Task<IActionResult> GetNumbersOfFriendApi([FromQuery] Guid userId)
+    {
+        var result = await _profileUserServices.GetNumbersOfFriendService(userId);
+        return Ok(result);
+    }
+
     [Authorize]
     [HttpPost("update_email")]
     public async Task<IActionResult> UpdateEmailUserApi([FromBody] EditEmailRequest req)

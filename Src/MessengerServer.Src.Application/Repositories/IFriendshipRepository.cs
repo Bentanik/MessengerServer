@@ -8,4 +8,5 @@ public interface IFriendshipRepository : IRepositoryBase<FriendshipEntity>
     Task<bool> IsExistFriend(Guid userInitId, Guid userReceiveId);
     Task<FriendshipEntity> GetFriendshipAsync(Guid userInitId, Guid userReceiveId);
     Task<GetFriendshipDTO> GetFriendshipDTOAsync(Guid userInitId, Guid userReceiveId);
+    Task<int> GetNumbersOfFriendByUserIdAsync(Guid userId);
 }
