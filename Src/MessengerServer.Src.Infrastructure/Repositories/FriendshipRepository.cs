@@ -58,9 +58,11 @@ public class FriendshipRepository(AppDbContext context) :
             .Where(fr => (fr.UserInitId == userId || fr.UserReceiveId == userId) && fr.Status == FriendshipStatusEnum.Accepted)
             .Select(fr => new ViewUserProfileDTO
             {
-                UserId = userId != fr.UserInitId ? userId : fr.UserInitId,
+                UserId = userId != fr.UserInitId ? fr.UserInitId : fr.UserReceiveId,
                 FullName = userId != fr.UserInitId ? fr.UserInitiated.FullName : fr.UserReceived.FullName,
-                CropAvatar = userId != fr.UserInitId ? fr.UserInitiated.CropAvatar : fr.UserReceived.CropAvatar,
+                CropAvatar = userId != fr.UserInitId ?
+                    $"http://localhost:5200/api/image/get_image_avatar?fileName={fr.UserInitiated.CropAvatar}" :
+                     $"http://localhost:5200/api/image/get_image_avatar?fileName={fr.UserReceived.CropAvatar}",
             }).ToListAsync();
     }
 }
