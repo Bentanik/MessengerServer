@@ -52,6 +52,20 @@ public class ProfileUserController(IProfileUserServices profileUserServices) : C
         return Ok(result);
     }
 
+    [HttpGet("get_nine_friends")]
+    public async Task<IActionResult> GetNineFriendsApi([FromQuery] Guid userId)
+    {
+        var result = await _profileUserServices.GetNineFriendsService(userId);
+        return Ok(result);
+    }
+
+    [HttpGet("get_nine_images")]
+    public async Task<IActionResult> GetNineImagesApi([FromQuery] Guid userId)
+    {
+        var result = await _profileUserServices.GetNineImagesService(userId);
+        return Ok(result);
+    }
+
     [Authorize]
     [HttpPost("update_email")]
     public async Task<IActionResult> UpdateEmailUserApi([FromBody] EditEmailRequest req)
@@ -177,7 +191,7 @@ public class ProfileUserController(IProfileUserServices profileUserServices) : C
             });
         }
 
-        var result = await _profileUserServices.UpdateAvatarUserService(Guid.Parse(userId), req.FileName, req.CropFileAvatar, req.FullFileAvatar);
+        var result = await _profileUserServices.UpdateAvatarUserService(Guid.Parse(userId), req.CropFileAvatar, req.FullFileAvatar);
 
         if (result.Error == 1)
         {
@@ -208,7 +222,7 @@ public class ProfileUserController(IProfileUserServices profileUserServices) : C
             });
         }
 
-        var result = await _profileUserServices.UpdateCoverPhotoService(Guid.Parse(userId), req.FileName, req.CropFileCoverPhoto, req.FullFileCoverPhoto);
+        var result = await _profileUserServices.UpdateCoverPhotoService(Guid.Parse(userId), req.CropFileCoverPhoto, req.FullFileCoverPhoto);
 
         if (result.Error == 1)
         {

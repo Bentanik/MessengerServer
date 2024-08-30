@@ -4,6 +4,7 @@ using MessengerServer.Src.Contracts.ErrorResponses;
 using MessengerServer.Src.Contracts.MessagesList;
 using MessengerServer.Src.Domain.Entities;
 using MessengerServer.Src.Domain.Enum;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MessengerServer.Src.Application.Services;
 
@@ -20,13 +21,13 @@ public class UserServices(IUnitOfWork unitOfWork)
         {
             return new Result<object>
             {
-                Error = 0,
+                Error = 1,
                 Data = new List<ErrorResponse>
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.AddFriendFail02.GetMessage().Code,
-                           ErrorMessage = MessagesList.AddFriendFail02.GetMessage().Message
+                           ErrorCode = MessagesList.AddFriendFail03.GetMessage().Code,
+                           ErrorMessage = MessagesList.AddFriendFail03.GetMessage().Message
                        }
                     }
             };
@@ -49,8 +50,8 @@ public class UserServices(IUnitOfWork unitOfWork)
                     {
                        new()
                        {
-                           ErrorCode = MessagesList.AddFriendFail.GetMessage().Code,
-                           ErrorMessage = MessagesList.AddFriendFail.GetMessage().Message
+                           ErrorCode = MessagesList.AddFriendFail02.GetMessage().Code,
+                           ErrorMessage = MessagesList.AddFriendFail02.GetMessage().Message
                        }
                     }
             };
@@ -118,6 +119,14 @@ public class UserServices(IUnitOfWork unitOfWork)
             return new Result<object>
             {
                 Error = 1,
+                Data = new List<ErrorResponse>
+                    {
+                       new()
+                       {
+                           ErrorCode = MessagesList.AddFriendFail04.GetMessage().Code,
+                           ErrorMessage = MessagesList.AddFriendFail04.GetMessage().Message
+                       }
+                    }
             };
         }
         _unitOfWork.FriendshipRepository.Remove(friendShip);

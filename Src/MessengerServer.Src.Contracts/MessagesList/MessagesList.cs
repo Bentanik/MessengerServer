@@ -78,8 +78,11 @@ public enum MessagesList
     AddFriendSuccessfully,
 
     [Message("Add friend fail", "adfr02")]
-    AddFriendFail,
+    AddFriendFail02,
 
     [Message("Add friend fail", "adfr03")]
-    AddFriendFail02
+    AddFriendFail03,
+
+    [Message("The two became friends", "adfr04")]
+    AddFriendFail04,
 }

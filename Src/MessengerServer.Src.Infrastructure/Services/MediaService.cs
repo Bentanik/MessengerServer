@@ -39,4 +39,26 @@ public class MediaService : IMediaService
             return false;
         }
     }
+
+    public IEnumerable<string> GetTopNFiles(int numbers, string path)
+    {
+        if (!Directory.Exists(path))
+        {
+            return null;
+        }
+        var files = Directory.GetFiles(path);
+        var sortedFiles = files
+           .Where(file => !Path.GetFileNameWithoutExtension(file).Contains("crop"))
+           .Select(file => new
+           {
+               FilePath = $"http://localhost:5200/api/image/get_image_avatar?fileName={file}",
+               UnixTimestamp = long.TryParse(Path.GetFileNameWithoutExtension(file).Split('_').FirstOrDefault(), out var timestamp) ? timestamp : 0
+           })
+           .OrderByDescending(x => x.UnixTimestamp)
+           .Take(numbers)
+           .Select(x => x.FilePath)
+           .ToList();
+
+        return sortedFiles;
+    }
 }

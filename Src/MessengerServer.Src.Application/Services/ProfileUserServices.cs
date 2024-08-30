@@ -237,7 +237,7 @@ public class ProfileUserServices(IUnitOfWork unitOfWork, IRedisService redisServ
                     } : null
         };
     }
-    public async Task<Result<object>> UpdateAvatarUserService(Guid userId, string nameFile, IFormFile cropAvatarFile, IFormFile fullAvatarFile)
+    public async Task<Result<object>> UpdateAvatarUserService(Guid userId, IFormFile cropAvatarFile, IFormFile fullAvatarFile)
     {
         var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
         if (user == null)
@@ -260,9 +260,9 @@ public class ProfileUserServices(IUnitOfWork unitOfWork, IRedisService redisServ
         long unixTimestamp = new DateTimeOffset(dateTime).ToUnixTimeSeconds();
 
         string fileExtension = Path.GetExtension(cropAvatarFile.FileName);
-        string newCropAvatarName = $"crop_{nameFile}_{unixTimestamp}{fileExtension}";
-        string newFullAvatarName = $"full_{nameFile}_{unixTimestamp}{fileExtension}";
-        string pathSave = $"{_mediaSetting.PathUser}/{user.Id}";
+        string newCropAvatarName = $"{unixTimestamp}_cropavatar_{fileExtension}";
+        string newFullAvatarName = $"{unixTimestamp}_fullavatar_{fileExtension}";
+        string pathSave = $"{_mediaSetting.PathUser}/{user.Id}/Images";
 
         var isSaveAvatar = await _mediaService.SaveAvatarCoverPhotoAsync(pathSave, newCropAvatarName, newFullAvatarName, cropAvatarFile, fullAvatarFile);
         if (isSaveAvatar == false)
@@ -302,7 +302,7 @@ public class ProfileUserServices(IUnitOfWork unitOfWork, IRedisService redisServ
             } : $"{pathSave}/{newCropAvatarName}"
         };
     }
-    public async Task<Result<object>> UpdateCoverPhotoService(Guid userId, string nameFile, IFormFile cropCoverPhotoFile, IFormFile fullCoverPhotoFile)
+    public async Task<Result<object>> UpdateCoverPhotoService(Guid userId, IFormFile cropCoverPhotoFile, IFormFile fullCoverPhotoFile)
     {
         var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
         if (user == null)
@@ -325,9 +325,9 @@ public class ProfileUserServices(IUnitOfWork unitOfWork, IRedisService redisServ
         long unixTimestamp = new DateTimeOffset(dateTime).ToUnixTimeSeconds();
 
         string fileExtension = Path.GetExtension(cropCoverPhotoFile.FileName);
-        string newCropCoverPhotoName = $"crop_{nameFile}_{unixTimestamp}{fileExtension}";
-        string newFullCoverPhotoName = $"full_{nameFile}_{unixTimestamp}{fileExtension}";
-        string pathSave = $"{_mediaSetting.PathUser}/{user.Id}";
+        string newCropCoverPhotoName = $"{unixTimestamp}_cropcoverphoto_{fileExtension}";
+        string newFullCoverPhotoName = $"{unixTimestamp}_fullcoverphoto_{fileExtension}";
+        string pathSave = $"{_mediaSetting.PathUser}/{user.Id}/Images";
 
         var isSaveAvatar = await _mediaService.SaveAvatarCoverPhotoAsync(pathSave, newCropCoverPhotoName, newFullCoverPhotoName, cropCoverPhotoFile, fullCoverPhotoFile);
         if (isSaveAvatar == false)
@@ -370,6 +370,25 @@ public class ProfileUserServices(IUnitOfWork unitOfWork, IRedisService redisServ
     public async Task<Result<object>> GetNumbersOfFriendService(Guid userId)
     {
         var result = await _unitOfWork.FriendshipRepository.GetNumbersOfFriendByUserIdAsync(userId);
+        return new Result<object>
+        {
+            Error = 0,
+            Data = result,
+        };
+    }
+    public async Task<Result<object>> GetNineFriendsService(Guid userId)
+    {
+        var result = await _unitOfWork.FriendshipRepository.GetNineFriendsByUserIdAsync(userId);
+        return new Result<object>
+        {
+            Error = 0,
+            Data = result,
+        };
+    }
+    public async Task<Result<object>> GetNineImagesService(Guid userId)
+    {
+        string path = $"{_mediaSetting.PathUser}/{userId}/Images";
+        var result = _mediaService.GetTopNFiles(9, path);
         return new Result<object>
         {
             Error = 0,
