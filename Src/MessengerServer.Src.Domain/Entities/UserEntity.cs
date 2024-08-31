@@ -14,4 +14,6 @@ public class UserEntity : BaseEntity
     public ICollection<FriendshipEntity>? FriendshipsReceived { get; set; }
     public ICollection<NotificationAddFriendEntitiy> SentNotificationAddFriends { get; set; }
     public ICollection<NotificationAddFriendEntitiy> ReceivedNotificationAddFriends { get; set; }
+    public ICollection<MessageEntity> SentMessages { get; set; }
+    public ICollection<MessageEntity> ReceivedMessages { get; set; }
 }

@@ -4,6 +4,7 @@ using MessengerServer.Src.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MessengerServer.Src.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240831054809_AddTableChat")]
+    partial class AddTableChat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,6 +44,9 @@ namespace MessengerServer.Src.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Read")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Student")
                         .HasColumnType("bit");
 
                     b.Property<Guid>("UserId")

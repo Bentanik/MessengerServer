@@ -5,17 +5,17 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace MessengerServer.Src.Infrastructure.Services;
 
-public class HubNotificationService(IHubContext<NotificationHub> notificationHub) 
+public class HubNotificationService(IHubContext<SignalRHub> signalRHub) 
     : IHubNotificationService
 {
-    private readonly IHubContext<NotificationHub> _notificationHub = notificationHub;
+    private readonly IHubContext<SignalRHub> _signalRHub = signalRHub;
 
     public async Task CountNotificationAsync(Guid userId, int countNotification)
     {
-        if (NotificationHub._connectionsMap.TryGetValue(userId, out string connectionId))
+        if (SignalRHub._connectionsMap.TryGetValue(userId, out string connectionId))
         {
             if (connectionId == null) return;
-            await _notificationHub.Clients.Client(connectionId).SendAsync("onCountNotification", 
+            await _signalRHub.Clients.Client(connectionId).SendAsync("onCountNotification", 
                 countNotification);
         }
         return;
@@ -23,10 +23,10 @@ public class HubNotificationService(IHubContext<NotificationHub> notificationHub
 
     public async Task SendNotificationFriendAsync(Guid userId, ViewUserAddedFriendDTO viewUserAddedFriendDTO)
     {
-        if (NotificationHub._connectionsMap.TryGetValue(userId, out string connectionId))
+        if (SignalRHub._connectionsMap.TryGetValue(userId, out string connectionId))
         {
             if (connectionId == null) return;
-            await _notificationHub.Clients.Client(connectionId).SendAsync("onFriendNotification", viewUserAddedFriendDTO);
+            await _signalRHub.Clients.Client(connectionId).SendAsync("onFriendNotification", viewUserAddedFriendDTO);
         }
         return;
     }

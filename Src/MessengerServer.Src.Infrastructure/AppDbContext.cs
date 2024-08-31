@@ -15,6 +15,8 @@ public class AppDbContext : DbContext
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<FriendshipEntity> Friendships { get; set; }
     public DbSet<NotificationAddFriendEntitiy> NotificationAddFriends { get; set; }
+    public DbSet<MessageEntity> Messages { get; set; }
+    public DbSet<ChatHistoryEntity> ChatHistories { get; set; }
     #endregion
 
     #region OnModelCreating
@@ -50,6 +52,34 @@ public class AppDbContext : DbContext
             .WithMany(u => u.ReceivedNotificationAddFriends)
             .HasForeignKey(n => n.ToUserId)
             .OnDelete(DeleteBehavior.Cascade);
+        #endregion
+
+        #region MessageEntity
+        modelBuilder.Entity<MessageEntity>()
+         .HasOne(m => m.Sender)
+         .WithMany(u => u.SentMessages)
+         .HasForeignKey(m => m.SenderId)
+         .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<MessageEntity>()
+                .HasOne(m => m.Receiver)
+                .WithMany(u => u.ReceivedMessages)
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
+        #endregion
+        
+        #region ChatHistoryEntity
+        modelBuilder.Entity<ChatHistoryEntity>()
+                .HasOne(ch => ch.User)
+                .WithMany()
+                .HasForeignKey(ch => ch.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ChatHistoryEntity>()
+                .HasOne(ch => ch.ChatPartner)
+                .WithMany()
+                .HasForeignKey(ch => ch.ChatPartnerId)
+                .OnDelete(DeleteBehavior.Restrict);
         #endregion
     }
     #endregion

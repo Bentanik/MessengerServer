@@ -8,4 +8,6 @@ public interface IUnitOfWork
     IUserRepository UserRepository { get; }
     IFriendshipRepository FriendshipRepository { get; }
     INotificationAddFriendRepository NotificationAddFriendRepository { get; }
+    IMessageRepository MessageRepository { get; }
+    IChatHistoryRepository ChatHistoryRepository { get; }
 }

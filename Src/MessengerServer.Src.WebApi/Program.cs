@@ -28,6 +28,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<NotificationHub>("hub/notification");
+app.MapHub<SignalRHub>("hub");
 
 app.Run();

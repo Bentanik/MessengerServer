@@ -1,12 +1,15 @@
 ﻿using MessengerServer.Src.Application.Interfaces;
+using MessengerServer.Src.Contracts.Abstractions.MessageRequests;
 using Microsoft.AspNetCore.SignalR;
 
 namespace MessengerServer.Src.WebApi.Hubs;
 
-public class NotificationHub(INotificationService notificationService) : Hub
+public class SignalRHub(INotificationService notificationService, IMessageServices messageServices) 
+    : Hub
 {
     public readonly static Dictionary<Guid, string> _connectionsMap = [];
     private readonly INotificationService _notificationService = notificationService;
+    private readonly IMessageServices _messageServices = messageServices;
 
     public override async Task OnConnectedAsync()
     {
@@ -34,5 +37,10 @@ public class NotificationHub(INotificationService notificationService) : Hub
     public async Task CountNotification(Guid userId)
     {
         await _notificationService.CountNotificationService(userId);
+    }
+
+    public async Task SendMessageAsync(SendMessageRequest req)
+    {
+        await _messageServices.SendMessageService(req.UserInitId, req.UserReceiveId, req.Content);
     }
 }
