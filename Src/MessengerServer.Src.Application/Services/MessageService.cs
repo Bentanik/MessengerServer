@@ -1,12 +1,13 @@
 ﻿using MessengerServer.Src.Application.Interfaces;
 using MessengerServer.Src.Application.MapExtensions.MessageMapExtensions;
 using MessengerServer.Src.Application.Repositories;
+using MessengerServer.Src.Contracts.Abstractions;
 using MessengerServer.Src.Contracts.DTOs.MessageDTOs;
-using MessengerServer.Src.Domain.Entities;
 
 namespace MessengerServer.Src.Application.Services;
 
-public class MessageService(IHubMessageService hubMessageService, IUnitOfWork unitOfWork) : IMessageServices
+public class MessageService(IHubMessageService hubMessageService, IUnitOfWork unitOfWork) 
+    : IMessageServices
 {
     private readonly IHubMessageService _hubMessageService = hubMessageService;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -22,7 +23,7 @@ public class MessageService(IHubMessageService hubMessageService, IUnitOfWork un
         var chatHistory = await _unitOfWork.ChatHistoryRepository.GetChatSenderAndRecieverHistory(createChatHistoryDTO);
         if (chatHistory == null)
         {
-            var chatHistoryMapper = createChatHistoryDTO.ToChatHistory(); 
+            var chatHistoryMapper = createChatHistoryDTO.ToChatHistory();
             _unitOfWork.ChatHistoryRepository.Add(chatHistoryMapper);
         }
         else
@@ -49,5 +50,26 @@ public class MessageService(IHubMessageService hubMessageService, IUnitOfWork un
         if (result == 0) message.Content = null;
         await _hubMessageService.SendMessageAsync(message);
         return;
+    }
+
+    public async Task<Result<object>> GetMessageHistoryService(Guid userInitId, Guid userReceiveId)
+    {
+        //var result = await _unitOfWork.MessageRepository.GetMessageHistoryPagination(userInitId, userReceiveId);
+        var result = await _unitOfWork.MessageRepository.GetMessageHistory(userInitId, userReceiveId);
+        return new Result<object>
+        {
+            Error = 0,
+            Data = result.Items,
+        };
+    }
+
+    public async Task<Result<object>> GetLastMessageHistoryService(Guid userInitId, Guid userReceiveId)
+    {
+        var result = await _unitOfWork.MessageRepository.GetLastMessageHistoryAsync(userInitId, userReceiveId);
+        return new Result<object>
+        {
+            Error = 0,
+            Data = result.Items,
+        };
     }
 }

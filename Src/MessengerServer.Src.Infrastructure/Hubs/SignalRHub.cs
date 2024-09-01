@@ -43,4 +43,10 @@ public class SignalRHub(INotificationService notificationService, IMessageServic
     {
         await _messageServices.SendMessageService(req.UserInitId, req.UserReceiveId, req.Content);
     }
+
+    public async Task GetMessageHistoryAsync(GetMessageRequest req)
+    {
+        var result = await _messageServices.GetMessageHistoryService(req.UserInitId, req.UserReceiveId);
+        await Clients.Caller.SendAsync("onMessageHistory", result);
+    }
 }
