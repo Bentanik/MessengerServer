@@ -63,6 +63,16 @@ public class MessageService(IHubMessageService hubMessageService, IUnitOfWork un
         };
     }
 
+    public async Task<Result<object>> GetTheseFriendMessagesService(Guid userId)
+    {
+        var result = await _unitOfWork.ChatHistoryRepository.GetTheseFriendMessagesByUserId(userId);
+        return new Result<object>
+        {
+            Error = 0,
+            Data = result,
+        };
+    }
+
     public async Task<Result<object>> GetLastMessageHistoryService(Guid userInitId, Guid userReceiveId)
     {
         var result = await _unitOfWork.MessageRepository.GetLastMessageHistoryAsync(userInitId, userReceiveId);

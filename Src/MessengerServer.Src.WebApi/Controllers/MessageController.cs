@@ -45,4 +45,21 @@ public class MessageController(IMessageServices messageService) : ControllerBase
         var result = await _messageService.GetLastMessageHistoryService(Guid.Parse(userId), userReceiveId);
         return Ok(result);
     }
+
+    [Authorize]
+    [HttpGet("get_these_friends_messaged")]
+    public async Task<IActionResult> GetTheseFriendMessaged([FromQuery] Guid userReceiveId)
+    {
+        var userId = User.FindFirstValue("UserId");
+        if (userId == null)
+        {
+            Response.Cookies.Delete("refreshToken");
+            return Ok(new Result<object>
+            {
+                Error = 0,
+            });
+        }
+        var result = await _messageService.GetTheseFriendMessagesService(Guid.Parse(userId));
+        return Ok(result);
+    }
 }

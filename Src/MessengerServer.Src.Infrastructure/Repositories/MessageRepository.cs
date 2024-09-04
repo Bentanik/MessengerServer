@@ -3,7 +3,6 @@ using MessengerServer.Src.Application.Repositories;
 using MessengerServer.Src.Contracts.DTOs.MessageDTOs;
 using MessengerServer.Src.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Asn1;
 
 namespace MessengerServer.Src.Infrastructure.Repositories;
 

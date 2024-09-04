@@ -11,4 +11,6 @@ public interface IMessageRepository : IRepositoryBase<MessageEntity>
     Task<Pagination<ViewMessageDTO>> GetMessageHistoryPagination
            (Guid senderId, Guid receiverId, int pageIndex = 0, int pageSize = 10);
     Task<Pagination<ViewMessageDTO>> GetLastMessageHistoryAsync(Guid senderId, Guid receiverId, int pageSize = 5);
+
+
 }
