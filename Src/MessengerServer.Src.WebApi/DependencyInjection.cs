@@ -50,8 +50,6 @@ public static class DependencyInjection
 
         services.AddTransient<IValidatorInterceptor, UseCustomErrorModelInterceptor>();
 
-
-
         services.AddApplication();
         services.AddInfrastructure(configuration);
 
